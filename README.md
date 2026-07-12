@@ -1,3 +1,11 @@
+# AI Code Review & Security Analysis Agent
+
+## GitHub Repository
+https://github.com/Rajashekar25-colud/AI_Code_Review_And_Security_Analysis_Agent
+
+## Live Demo
+https://aicodereviewandsecurityanalysisagent-nhndxuyepv8368zmzk39kx.streamlit.app/
+
 # 🤖 AI Code Review & Security Analysis Agent
 
 An AI-powered Code Review & Security Analysis platform that automatically analyzes Python and Java source code for syntax validation and builds a Retrieval-Augmented Generation (RAG) knowledge base from secure coding documents.
