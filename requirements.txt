@@ -1,18 +1,20 @@
-streamlit==1.46.1
+streamlit
 
-langchain==0.3.26
-langchain-community==0.3.27
-langchain-huggingface==0.3.0
-langchain-groq==0.3.6
+langchain
+langchain-community
+langchain-core
+langchain-chroma
+langchain-huggingface
+langchain-groq
 
-chromadb==1.0.15
+chromadb
 
-sentence-transformers==5.0.0
+sentence-transformers
 
-pypdf==5.8.0
+pypdf
 
-python-dotenv==1.1.1
+python-dotenv
 
-javalang==0.13.0
+javalang
 
-pydantic==2.11.7
+pydantic
