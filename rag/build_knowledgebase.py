@@ -1,4 +1,5 @@
 import os
+
 from rag.loader import load_documents
 from rag.splitter import split_documents
 from rag.embedding import create_embeddings
@@ -6,17 +7,21 @@ from rag.vector_store import create_vector_store
 
 
 def build_knowledge_base():
+    try:
+        os.makedirs("chroma_db", exist_ok=True)
 
-    print("Loading documents...")
-    documents = load_documents("knowledge_base")
+        documents = load_documents("knowledge_base")
 
-    print("Splitting documents...")
-    chunks = split_documents(documents)
+        if not documents:
+            return "No PDF documents found in the knowledge_base folder."
 
-    print("Creating embeddings...")
-    embeddings = create_embeddings()
+        chunks = split_documents(documents)
 
-    print("Creating vector database...")
-    create_vector_store(chunks, embeddings)
+        embeddings = create_embeddings()
 
-    return "Knowledge Base Created Successfully!"
+        create_vector_store(chunks, embeddings)
+
+        return "Knowledge Base Created Successfully!"
+
+    except Exception as e:
+        return f"Error: {str(e)}"
