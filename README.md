@@ -101,11 +101,9 @@ AI-Code-Review-Agent/
 # ⚙️ Installation
 
 ### Clone the repository
-
 ```bash
-git clone https://github.com/your-username/AI-Code-Review-Agent.git
+git clone https://github.com/Rajashekar25-colud/AI_Code_Review_And_Security_Analysis_Agent.git
 ```
-
 ### Navigate to the project
 
 ```bash
