@@ -1,27 +1,69 @@
 import os
 
-from rag.loader import load_documents
-from rag.splitter import split_documents
-from rag.embedding import create_embeddings
-from rag.vector_store import create_vector_store
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 
 
+def load_documents():
+
+    docs = []
+
+    folder = "knowledge_base"
+
+    for file in os.listdir(folder):
+
+        if file.endswith(".pdf"):
+
+            path = os.path.join(folder, file)
+
+            loader = PyPDFLoader(path)
+
+            documents = loader.load()
+
+            docs.extend(documents)
+
+            print(f"Loaded: {file}")
+
+    return docs
+
+
+def split_documents(documents):
+
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200
+    )
+
+    return splitter.split_documents(documents)
+
+
+def create_vector_store(chunks):
+
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+
+    Chroma.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        persist_directory="chroma_db"
+    )
+
+
+# 👇 ADD THIS FUNCTION
 def build_knowledge_base():
-    try:
-        os.makedirs("chroma_db", exist_ok=True)
 
-        documents = load_documents("knowledge_base")
+    documents = load_documents()
 
-        if not documents:
-            return "No PDF documents found in the knowledge_base folder."
+    chunks = split_documents(documents)
 
-        chunks = split_documents(documents)
+    create_vector_store(chunks)
 
-        embeddings = create_embeddings()
+    return "Knowledge Base built successfully!"
 
-        create_vector_store(chunks, embeddings)
 
-        return "Knowledge Base Created Successfully!"
+if __name__ == "__main__":
 
-    except Exception as e:
-        return f"Error: {str(e)}"
+    build_knowledge_base()
