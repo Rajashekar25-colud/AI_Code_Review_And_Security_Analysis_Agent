@@ -1,62 +1,146 @@
-# AI Code Review & Security Analysis Agent
-
-## GitHub Repository
-https://github.com/Rajashekar25-colud/AI_Code_Review_And_Security_Analysis_Agent
-
-## Live Demo
-https://aicodereviewandsecurityanalysisagent-nhndxuyepv8368zmzk39kx.streamlit.app/
-
 # 🤖 AI Code Review & Security Analysis Agent
 
-An AI-powered Code Review & Security Analysis platform that automatically analyzes Python and Java source code for syntax validation and builds a Retrieval-Augmented Generation (RAG) knowledge base from secure coding documents.
+## 🔗 GitHub Repository
+https://github.com/Rajashekar25-colud/AI_Code_Review_And_Security_Analysis_Agent
+
+## 🌐 Live Demo
+https://aicodereviewandsecurityanalysisagent-nhndxuyepv8368zmzk39kx.streamlit.app/
 
 ---
 
 # 📌 Project Overview
 
-Modern software development requires high-quality, secure, and maintainable code. Manual code reviews are often time-consuming and may overlook security vulnerabilities and coding best practices.
+The **AI Code Review & Security Analysis Agent** is an AI-powered static code analysis platform developed using **Python**, **Streamlit**, **LangChain**, **HuggingFace Embeddings**, and **ChromaDB**.
 
-The AI Code Review & Security Analysis Agent is designed to simplify the initial stages of code review by allowing developers to submit source code, validate its syntax, and build a searchable secure coding knowledge base using Retrieval-Augmented Generation (RAG).
+The application automatically analyzes **Python** and **Java** source code for:
+
+- Syntax Validation
+- Code Quality Analysis
+- Security Vulnerability Detection
+- OWASP-Based Secure Coding Review
+- Retrieval-Augmented Generation (RAG) Knowledge Base
+
+The system helps developers identify coding issues, security vulnerabilities, and secure coding best practices before deployment.
 
 ---
 
 # ✨ Features
 
-- Upload Python and Java source files
+## 📂 Code Submission
+
+- Upload Python (.py) files
+- Upload Java (.java) files
 - Paste source code directly
-- Automatic programming language detection
-- Python syntax validation
-- Java syntax validation
-- Secure Coding Knowledge Base creation
-- PDF document loading
-- Document chunking
-- HuggingFace embedding generation
-- ChromaDB vector database indexing
-- Streamlit-based interactive interface
+- Automatic language detection
 
 ---
 
-# 🛠️ Tech Stack
+## ✅ Syntax Validation
 
-### Frontend
+### Python
+
+- Syntax checking
+- Error reporting
+
+### Java
+
+- Syntax validation using javalang
+- Error reporting
+
+---
+
+# 🔍 Code Quality Analysis
+
+The Code Analysis Agent detects:
+
+- Console Output Statements
+- Long Methods
+- Long Lines
+- Too Many Parameters
+- Magic Numbers
+- TODO / FIXME Comments
+- Duplicate Imports
+- Unused Imports
+- Global Variables
+- Bare Except Blocks
+- Generic Exception Catch
+- Empty Exception Blocks
+- Infinite Loops
+- Deep Nesting
+
+---
+
+# 🔒 Security Vulnerability Detection
+
+The Security Agent detects OWASP-related vulnerabilities including:
+
+- SQL Injection
+- Hardcoded Secrets
+- Weak Passwords
+- Command Injection
+- Path Traversal
+- Cross-Site Scripting (XSS)
+- Weak Cryptography
+- Insecure Deserialization
+- Weak Random Number Generation
+
+Each vulnerability includes:
+
+- Severity
+- Description
+- Recommendation
+
+---
+
+# 📚 Secure Coding Knowledge Base (RAG)
+
+The application builds a searchable knowledge base from secure coding documents.
+
+Included documents:
+
+- OWASP Top 10
+- OWASP Top 10 2025
+- SQL Injection
+- Broken Access Control
+- Weak Authentication
+- Security Misconfiguration
+- Cryptographic Failures
+- Insecure Design
+- Logging & Monitoring
+- Vulnerable Components
+- SSRF
+- SSL Security
+- XML Security
+- Java Secure Coding
+- Python Security Considerations
+- Python Secrets Module
+- Secure Coding Guide
+- Pickle Security
+- Subprocess Security
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
 
 - Streamlit
 
-### Backend
+## Backend
 
 - Python
 
-### AI & RAG
+## AI & RAG
 
 - LangChain
 - HuggingFace Embeddings
 - ChromaDB
 
-### Document Processing
+## Document Processing
 
 - PyPDF
 
-### Programming Languages Supported
+## Programming Languages Supported
 
 - Python
 - Java
@@ -65,17 +149,18 @@ The AI Code Review & Security Analysis Agent is designed to simplify the initial
 
 # 📂 Project Structure
 
-```text
+```
 AI-Code-Review-Agent/
 │
 ├── app.py
 ├── requirements.txt
 ├── .env
 │
-├── knowledge_base/
-│   ├── OWASP_Top10.pdf
-│   ├── Java_Secure_Coding.pdf
-│   └── Secure_Coding_Guide.pdf
+├── agents/
+│   ├── __init__.py
+│   ├── orchestrator.py
+│   ├── code_analysis_agent.py
+│   └── security_agent.py
 │
 ├── modules/
 │   ├── file_handler.py
@@ -91,6 +176,8 @@ AI-Code-Review-Agent/
 │   ├── build_knowledgebase.py
 │   └── groq_model.py
 │
+├── knowledge_base/
+│
 ├── chroma_db/
 │
 └── uploads/
@@ -98,29 +185,37 @@ AI-Code-Review-Agent/
 
 ---
 
-# ⚙️ Installation
+# ⚙ Installation
 
-### Clone the repository
+## Clone Repository
+
 ```bash
 git clone https://github.com/Rajashekar25-colud/AI_Code_Review_And_Security_Analysis_Agent.git
 ```
-### Navigate to the project
+
+---
+
+## Navigate to Project
 
 ```bash
-cd AI-Code-Review-Agent
+cd AI_Code_Review_And_Security_Analysis_Agent
 ```
 
-### Install dependencies
+---
+
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Configure environment variables
+---
 
-Create a `.env` file in the project root.
+## Configure Environment Variables
 
-```env
+Create a **.env** file in the project root.
+
+```text
 GROQ_API_KEY=your_groq_api_key
 
 EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
@@ -132,7 +227,9 @@ KNOWLEDGE_BASE=knowledge_base
 UPLOAD_FOLDER=uploads
 ```
 
-### Run the application
+---
+
+## Run the Application
 
 ```bash
 streamlit run app.py
@@ -140,83 +237,189 @@ streamlit run app.py
 
 ---
 
-# 📚 Knowledge Base
+# 🏗 System Workflow
 
-The application builds a searchable vector database from secure coding documents such as:
-
-- OWASP Top 10
-- Java Secure Coding Guide
-- Python Secure Coding Guide
-- Secure Coding Best Practices
+```
+             User Source Code
+                    │
+                    ▼
+         Language Detection Module
+                    │
+                    ▼
+           Syntax Validation Module
+                    │
+                    ▼
+        Code Analysis Agent
+                    │
+                    ▼
+        Security Analysis Agent
+                    │
+                    ▼
+      Severity Classification
+                    │
+                    ▼
+      Consolidated Review Report
+```
 
 ---
 
-# 🔄 RAG Pipeline
+# 📚 RAG Pipeline
 
-```text
-PDF Documents
-      │
-      ▼
-Document Loader
-      │
-      ▼
-Text Splitter
-      │
-      ▼
-HuggingFace Embeddings
-      │
-      ▼
-ChromaDB Vector Store
 ```
+Knowledge Base PDFs
+          │
+          ▼
+    PDF Loader
+          │
+          ▼
+    Text Splitter
+          │
+          ▼
+ HuggingFace Embeddings
+          │
+          ▼
+ Chroma Vector Database
+          │
+          ▼
+   Similarity Search
+          │
+          ▼
+ Context Retrieval
+```
+
+---
+
+# 📊 Analysis Dashboard
+
+The application provides:
+
+- Language Detection
+- Syntax Validation
+- Code Analysis Findings
+- Security Findings
+- Severity Summary
+- Recommendations
+- Consolidated Review Report
+
+Severity Levels:
+
+- 🔴 Critical
+- 🟠 High
+- 🟡 Medium
+- 🟢 Low
 
 ---
 
 # 🧪 Functionalities
 
-### Code Submission
+## Code Submission
 
-- Upload Python files (.py)
-- Upload Java files (.java)
-- Paste source code
+- Upload Python Files
+- Upload Java Files
+- Paste Source Code
 
-### Language Detection
+---
 
-- Automatic language identification
-- Python detection
-- Java detection
+## Language Detection
 
-### Syntax Validation
+- Automatic Detection
+- Python
+- Java
 
-- Python syntax validation
-- Java syntax validation
-- Error reporting
+---
 
-### Knowledge Base
+## Syntax Validation
 
-- Load PDF documents
-- Split documents into chunks
-- Generate embeddings
-- Store vectors in ChromaDB
+- Python Syntax Validation
+- Java Syntax Validation
+
+---
+
+## Code Analysis
+
+- Console Output Detection
+- Long Method Detection
+- Long Line Detection
+- Too Many Parameters
+- Magic Numbers
+- Duplicate Imports
+- Unused Imports
+- Global Variables
+- TODO/FIXME Comments
+- Infinite Loop Detection
+- Deep Nesting Detection
+- Bare Exception Detection
+- Generic Exception Detection
+- Empty Exception Blocks
+
+---
+
+## Security Analysis
+
+- SQL Injection
+- Hardcoded Secrets
+- Weak Password Detection
+- Command Injection
+- Path Traversal
+- Cross Site Scripting (XSS)
+- Weak Cryptography
+- Insecure Deserialization
+- Weak Random Number Generation
+
+---
+
+## Knowledge Base
+
+- Load Secure Coding PDFs
+- Split Documents
+- Generate Embeddings
+- Store in ChromaDB
+- Retrieve Relevant Context
 
 ---
 
 # 📦 Dependencies
 
-- Streamlit
-- LangChain
-- LangChain Community
-- LangChain Chroma
-- LangChain HuggingFace
-- LangChain Text Splitters
-- ChromaDB
-- Sentence Transformers
-- PyPDF
-- Python Dotenv
-- Javalang
-- Groq
+- streamlit
+- langchain
+- langchain-community
+- langchain-chroma
+- langchain-huggingface
+- chromadb
+- sentence-transformers
+- pypdf
+- python-dotenv
+- javalang
+- groq
+
+---
+
+# 🚀 Future Enhancements
+
+- AI-generated Fix Suggestions
+- PDF Report Export
+- HTML Report Export
+- Analysis History
+- User Authentication
+- GitHub Pull Request Integration
+- SonarQube-style Dashboard
+- Additional OWASP Rules
+- CI/CD Integration
+
+---
+
+# 👨‍💻 Developer
+
+**Rajashekar Kanneboina**
+
+B.Tech – Computer Science & Engineering
+
+Marri Laxman Reddy Institute of Technology and Management (MLRITM)
+
+Hyderabad, India
 
 ---
 
 # 📄 License
 
-This project is intended for educational and learning purposes.
+This project is developed for educational and learning purposes.
