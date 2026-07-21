@@ -528,6 +528,26 @@ See the [LICENSE](LICENSE) file for details.
 
 
 ---
+## 📁 Milestone Documentation
+
+The **Milestone docs** folder contains supporting documentation for the project:
+
+- 📅 Agile Template
+- 🧪 Unit Test Plan
+- 🐞 Defect Tracker
+
+# 📄 PDF Report Generation
+
+After completing code analysis, users can download a professional PDF report containing:
+
+- Project title
+- Programming language
+- File name
+- Severity summary
+- Code quality findings
+- Security vulnerabilities
+- Line numbers
+- Recommendations
 
 # ⭐ Acknowledgements
 

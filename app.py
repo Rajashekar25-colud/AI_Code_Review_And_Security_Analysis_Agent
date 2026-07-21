@@ -6,6 +6,7 @@ from modules.language_detector import detect_language
 from rag.build_knowledgebase import build_knowledge_base
 
 from agents.orchestrator import Orchestrator
+from modules.report_generator import generate_pdf
 
 
 # =====================================================
@@ -322,6 +323,18 @@ The system performs:
                     []
                 )
 
+                # Generate PDF Report
+                pdf_file = generate_pdf(
+                    language,
+                    findings,
+                     {
+                        "Critical": summary.get("CRITICAL", 0),
+                        "High": summary.get("HIGH", 0),
+                        "Medium": summary.get("MEDIUM", 0),
+                        "Low": summary.get("LOW", 0),
+                       "Total": len(findings)
+                         }
+                     )
 
 
                 st.divider()
@@ -515,7 +528,20 @@ The system performs:
                                 )
                             )
 
+                # ============================================
+                # Download PDF Report
+                # ============================================
 
+                st.divider()
+
+                with open(pdf_file, "rb") as pdf:
+                    st.download_button(
+                        label="📄 Download PDF Report",
+                        data=pdf,
+                        file_name="AI_Code_Review_Report.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                    )
 
             # =====================================================
             # Syntax Invalid
@@ -523,9 +549,7 @@ The system performs:
 
             else:
 
-                st.error(
-                    message
-                )
+                st.error(message)
 
 # =====================================================
 # KNOWLEDGE BASE

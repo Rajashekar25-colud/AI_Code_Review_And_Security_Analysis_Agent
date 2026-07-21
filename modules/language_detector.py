@@ -20,7 +20,7 @@ def detect_language(code, filename=None):
             return "Java"
 
     # ----------------------------------------
-    # 2. Empty code
+    # 2. Empty source
     # ----------------------------------------
     if not code or not code.strip():
         return "Unknown"
@@ -28,171 +28,215 @@ def detect_language(code, filename=None):
     code_lower = code.lower()
 
     # ----------------------------------------
-    # 3. Java patterns
+    # 3. Java Patterns
     # ----------------------------------------
     java_patterns = [
 
         r"import\s+java",
-
-        r"public\s+class",
-
-        r"class\s+\w+",
-
-        r"public\s+static\s+void\s+main",
-
-        r"system\.out\.println",
-
-        r"drivermanager",
-
-        r"\bconnection\b",
-
-        r"\bpreparedstatement\b",
-
-        r"\bstatement\b",
-
-        r"\bresultset\b",
-
-        r"\bthrows\b",
-
-        r"\bextends\b",
-
-        r"\bimplements\b",
-
-        r"\bstring\b",
-
-        r"new\s+\w+",
-
         r"package\s+\w+",
-
-        r"jdbc:",
-
-        r"scanner\s+\w+",
-
+        r"public\s+class",
+        r"class\s+\w+",
+        r"public\s+static\s+void\s+main",
+        r"system\.out\.println",
+        r"out\.println",
+        r"request\.getparameter",
+        r"response",
+        r"httpservlet",
+        r"servlet",
+        r"getparameter",
+        r"\bstring\b",
+        r"\bint\b",
+        r"\bdouble\b",
+        r"\bboolean\b",
+        r"\bvoid\b",
+        r"\bextends\b",
+        r"\bimplements\b",
+        r"\bthrows\b",
+        r"\bthrow\b",
+        r"new\s+\w+",
+        r"scanner",
         r"arraylist",
-
-        r"hashmap"
-
+        r"linkedlist",
+        r"hashmap",
+        r"hashset",
+        r"treemap",
+        r"drivermanager",
+        r"\bconnection\b",
+        r"\bpreparedstatement\b",
+        r"\bstatement\b",
+        r"\bresultset\b",
+        r"jdbc:",
+        r"catch\s*\(",
+        r"finally",
+        r"try\s*\{",
+        r"private\s+",
+        r"protected\s+",
+        r"public\s+",
+        r"final\s+",
+        r"static\s+",
+        r"this\.",
+        r"super\.",
+        r"@override",
+        r"@restcontroller",
+        r"@requestmapping",
+        r"@getmapping",
+        r"@postmapping",
+        r"@service",
+        r"@repository",
+        r"@entity",
     ]
 
     # ----------------------------------------
-    # 4. Python patterns
+    # 4. Python Patterns
     # ----------------------------------------
     python_patterns = [
 
         r"\bdef\b",
-
         r"\bfrom\b",
-
         r"\bimport\s+\w+",
-
         r"print\s*\(",
-
         r"self",
-
         r"__name__",
-
         r"async\s+def",
-
+        r"await",
         r"lambda",
-
         r"try:",
-
         r"except",
-
         r"finally:",
-
         r"with\s+",
-
         r"yield",
-
         r"pass",
-
         r"none",
-
         r"true",
-
         r"false",
-
-        r"pickle",
-
         r"os\.",
-
         r"subprocess",
-
-        r"flask",
-
-        r"django",
-
-        r"streamlit",
-
-        r"request\.",
-
-        r"input\s*\(",
-
-        r"open\s*\(",
-
-        r"random\.",
-
+        r"pickle",
         r"hashlib",
-
-        r"eval\s*\("
-
+        r"django",
+        r"flask",
+        r"streamlit",
+        r"fastapi",
+        r"input\s*\(",
+        r"open\s*\(",
+        r"eval\s*\(",
+        r"exec\s*\(",
+        r"random\.",
+        r"numpy",
+        r"pandas",
+        r"matplotlib",
+        r"plt\.",
+        r"if __name__",
+        r"class\s+\w+\(",
     ]
 
     # ----------------------------------------
-    # 5. Calculate score
+    # 5. Score Matching
     # ----------------------------------------
     java_score = 0
     python_score = 0
 
     for pattern in java_patterns:
-
         if re.search(pattern, code_lower):
             java_score += 1
 
     for pattern in python_patterns:
-
         if re.search(pattern, code_lower):
             python_score += 1
 
     # ----------------------------------------
-    # 6. Decide language
+    # 6. Decide by score
     # ----------------------------------------
-    if java_score > python_score:
+    if java_score > python_score and java_score > 0:
         return "Java"
 
-    if python_score > java_score:
+    if python_score > java_score and python_score > 0:
         return "Python"
 
     # ----------------------------------------
-    # 7. Extra fallback checks
+    # 7. Java Fallbacks
     # ----------------------------------------
 
-    # Java style
     if ";" in code and ("{" in code or "}" in code):
         return "Java"
 
-    # Java database snippet
+    if "system.out.println" in code_lower:
+        return "Java"
+
+    if "out.println" in code_lower:
+        return "Java"
+
+    if "getparameter" in code_lower:
+        return "Java"
+
+    if "request." in code_lower:
+        return "Java"
+
+    if "response." in code_lower:
+        return "Java"
+
     if "drivermanager" in code_lower:
+        return "Java"
+
+    if "preparedstatement" in code_lower:
         return "Java"
 
     if "connection" in code_lower:
         return "Java"
 
-    # Python indentation
+    if "resultset" in code_lower:
+        return "Java"
+
+    if "scanner" in code_lower:
+        return "Java"
+
+    if "arraylist" in code_lower:
+        return "Java"
+
+    if "hashmap" in code_lower:
+        return "Java"
+
+    if "string " in code_lower and ";" in code:
+        return "Java"
+
+    if "public " in code_lower:
+        return "Java"
+
+    if "private " in code_lower:
+        return "Java"
+
+    if "protected " in code_lower:
+        return "Java"
+
+    # ----------------------------------------
+    # 8. Python Fallbacks
+    # ----------------------------------------
+
     if ":" in code and (
         "def " in code_lower
         or "if " in code_lower
         or "for " in code_lower
         or "while " in code_lower
+        or "with " in code_lower
     ):
         return "Python"
-
-    # Generic imports
-    if re.search(r"import\s+java", code_lower):
-        return "Java"
 
     if re.search(r"import\s+\w+", code_lower):
         return "Python"
 
+    if "print(" in code_lower:
+        return "Python"
+
+    if "input(" in code_lower:
+        return "Python"
+
+    if "open(" in code_lower:
+        return "Python"
+
+    if "os." in code_lower:
+        return "Python"
+
+    # ----------------------------------------
+    # 9. Unknown
+    # ----------------------------------------
     return "Unknown"

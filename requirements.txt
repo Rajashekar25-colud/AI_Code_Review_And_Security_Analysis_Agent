@@ -18,3 +18,5 @@ python-dotenv
 javalang
 
 pydantic
+
+reportlab
