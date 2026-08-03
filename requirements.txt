@@ -1,22 +1,30 @@
-streamlit
+streamlit==1.49.1
+python-dotenv==1.1.1
 
-langchain
-langchain-core
-langchain-community
-langchain-chroma
-langchain-huggingface
-langchain-groq
+langchain==0.3.27
+langchain-core==0.3.75
+langchain-community==0.3.27
+langchain-groq==0.3.7
+langchain-huggingface==0.3.1
+langchain-text-splitters==0.3.9
 
-chromadb
+langgraph==0.6.7
 
-sentence-transformers
+chromadb==1.0.20
+sentence-transformers==5.1.0
+huggingface-hub==0.34.4
 
-pypdf
+pypdf==6.0.0
+faiss-cpu==1.12.0
 
-python-dotenv
+plotly==6.3.0
+pandas==2.3.2
 
-javalang
+pylint==3.3.8
+radon==6.0.1
+bandit==1.8.6
+javalang==0.13.0
 
-pydantic
+reportlab==4.4.3
 
-reportlab
+groq==0.31.1

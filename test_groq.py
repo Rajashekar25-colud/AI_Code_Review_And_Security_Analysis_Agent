@@ -1,7 +1,12 @@
 from rag.groq_model import get_groq_model
 
-model = get_groq_model()
 
-response = model.invoke("Explain SQL Injection in one sentence.")
+llm = get_groq_model()
+
+
+response = llm.invoke(
+    "Explain SQL Injection in one sentence"
+)
+
 
 print(response.content)

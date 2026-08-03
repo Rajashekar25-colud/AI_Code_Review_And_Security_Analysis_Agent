@@ -1,3 +1,5 @@
+import os
+
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -5,10 +7,16 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
+
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.units import inch
+
+
+# ==================================================
+# PDF Styles
+# ==================================================
 
 styles = getSampleStyleSheet()
 
@@ -16,157 +24,313 @@ title_style = styles["Heading1"]
 title_style.alignment = TA_CENTER
 
 heading = styles["Heading2"]
+
 normal = styles["BodyText"]
 
 
-def generate_pdf(language, findings, summary):
+# ==================================================
+# PDF Generator
+# ==================================================
 
-    filename = "AI_Code_Review_Report.pdf"
+def generate_pdf(
+    language,
+    findings,
+    summary
+):
 
-    doc = SimpleDocTemplate(filename)
+    # ----------------------------------------------
+    # Create report directory dynamically
+    # ----------------------------------------------
+
+    report_directory = os.path.join(
+        os.getcwd(),
+        "generated_reports"
+    )
+
+    os.makedirs(
+        report_directory,
+        exist_ok=True
+    )
+
+
+    pdf_path = os.path.join(
+        report_directory,
+        "AI_Code_Review_Report.pdf"
+    )
+
+
+    doc = SimpleDocTemplate(
+        pdf_path
+    )
+
 
     story = []
 
-    # ==========================================
+
+    # ==============================================
     # Title
-    # ==========================================
+    # ==============================================
 
     story.append(
         Paragraph(
             "AI Code Review & Security Analysis Report",
-            title_style,
+            title_style
         )
     )
 
-    story.append(Spacer(1, 0.3 * inch))
+    story.append(
+        Spacer(
+            1,
+            0.3 * inch
+        )
+    )
+
 
     story.append(
         Paragraph(
             f"<b>Language:</b> {language}",
-            normal,
+            normal
         )
     )
 
-    story.append(Spacer(1, 0.2 * inch))
 
-    # ==========================================
-    # Summary
-    # ==========================================
+    story.append(
+        Spacer(
+            1,
+            0.2 * inch
+        )
+    )
+
+
+    # ==============================================
+    # Analysis Summary
+    # ==============================================
 
     story.append(
         Paragraph(
             "Analysis Summary",
-            heading,
+            heading
         )
     )
 
+
     summary_table = Table(
         [
-            ["Severity", "Count"],
-            ["Critical", summary.get("Critical", 0)],
-            ["High", summary.get("High", 0)],
-            ["Medium", summary.get("Medium", 0)],
-            ["Low", summary.get("Low", 0)],
-            ["Total", summary.get("Total", 0)],
+            [
+                "Severity",
+                "Count"
+            ],
+            [
+                "Critical",
+                summary.get(
+                    "Critical",
+                    0
+                )
+            ],
+            [
+                "High",
+                summary.get(
+                    "High",
+                    0
+                )
+            ],
+            [
+                "Medium",
+                summary.get(
+                    "Medium",
+                    0
+                )
+            ],
+            [
+                "Low",
+                summary.get(
+                    "Low",
+                    0
+                )
+            ],
+            [
+                "Total",
+                summary.get(
+                    "Total",
+                    0
+                )
+            ]
         ],
-        colWidths=[150, 80],
+
+        colWidths=[
+            150,
+            80
+        ]
     )
+
 
     summary_table.setStyle(
         TableStyle(
             [
-                ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-                ("BACKGROUND", (0, 1), (0, -1), colors.whitesmoke),
-                ("ALIGN", (1, 1), (1, -1), "CENTER"),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                (
+                    "GRID",
+                    (0,0),
+                    (-1,-1),
+                    1,
+                    colors.black
+                ),
+
+                (
+                    "BACKGROUND",
+                    (0,0),
+                    (-1,0),
+                    colors.lightgrey
+                ),
+
+                (
+                    "ALIGN",
+                    (1,1),
+                    (1,-1),
+                    "CENTER"
+                ),
+
+                (
+                    "FONTNAME",
+                    (0,0),
+                    (-1,0),
+                    "Helvetica-Bold"
+                )
             ]
         )
     )
 
-    story.append(summary_table)
 
-    story.append(Spacer(1, 0.3 * inch))
+    story.append(
+        summary_table
+    )
 
-    # ==========================================
+
+    story.append(
+        Spacer(
+            1,
+            0.3 * inch
+        )
+    )
+
+
+    # ==============================================
     # Findings
-    # ==========================================
+    # ==============================================
 
     story.append(
         Paragraph(
             "Detailed Findings",
-            heading,
+            heading
         )
     )
 
-    if len(findings) == 0:
+
+    if not findings:
+
 
         story.append(
             Paragraph(
                 "No issues detected.",
-                normal,
+                normal
             )
         )
 
+
     else:
 
-        for i, finding in enumerate(findings, start=1):
+
+        for index, finding in enumerate(
+            findings,
+            start=1
+        ):
+
 
             story.append(
                 Paragraph(
-                    f"<b>Finding {i}</b>",
-                    styles["Heading3"],
+                    f"Finding {index}",
+                    styles["Heading3"]
                 )
             )
+
+
+            details = [
+
+                (
+                    "Agent",
+                    finding.get(
+                        "agent",
+                        "Unknown"
+                    )
+                ),
+
+                (
+                    "Severity",
+                    finding.get(
+                        "severity",
+                        "LOW"
+                    )
+                ),
+
+                (
+                    "Issue",
+                    finding.get(
+                        "type",
+                        "Unknown"
+                    )
+                ),
+
+                (
+                    "Line",
+                    finding.get(
+                        "line",
+                        "N/A"
+                    )
+                ),
+
+                (
+                    "Description",
+                    finding.get(
+                        "description",
+                        "No description available"
+                    )
+                ),
+
+                (
+                    "Recommendation",
+                    finding.get(
+                        "recommendation",
+                        "No recommendation available"
+                    )
+                )
+            ]
+
+
+            for key, value in details:
+
+
+                story.append(
+                    Paragraph(
+                        f"<b>{key}:</b> {value}",
+                        normal
+                    )
+                )
+
 
             story.append(
-                Paragraph(
-                    f"<b>Agent:</b> {finding.get('agent','Unknown')}",
-                    normal,
+                Spacer(
+                    1,
+                    0.25 * inch
                 )
             )
 
-            story.append(
-                Paragraph(
-                    f"<b>Severity:</b> {finding.get('severity','LOW')}",
-                    normal,
-                )
-            )
 
-            story.append(
-                Paragraph(
-                    f"<b>Issue:</b> {finding.get('type','Unknown')}",
-                    normal,
-                )
-            )
+    # ==============================================
+    # Generate PDF
+    # ==============================================
 
-            story.append(
-                Paragraph(
-                    f"<b>Line:</b> {finding.get('line','N/A')}",
-                    normal,
-                )
-            )
+    doc.build(
+        story
+    )
 
-            story.append(
-                Paragraph(
-                    f"<b>Description:</b> {finding.get('description','No description available.')}",
-                    normal,
-                )
-            )
 
-            story.append(
-                Paragraph(
-                    f"<b>Recommendation:</b> {finding.get('recommendation','No recommendation available.')}",
-                    normal,
-                )
-            )
-
-            story.append(Spacer(1, 0.25 * inch))
-
-    # ==========================================
-    # Build PDF
-    # ==========================================
-
-    doc.build(story)
-
-    return filename
+    return pdf_path

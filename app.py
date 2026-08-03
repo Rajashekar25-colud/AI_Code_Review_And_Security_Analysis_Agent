@@ -1,818 +1,198 @@
+import os
+
 import streamlit as st
+from dotenv import load_dotenv
 
-from modules.syntax_validator import validate_code
-from modules.language_detector import detect_language
 
-from rag.build_knowledgebase import build_knowledge_base
+# ==========================================================
+# Load Environment Variables
+# ==========================================================
+
+load_dotenv()
+
+
+# ==========================================================
+# Import Application Modules
+# ==========================================================
 
 from agents.orchestrator import Orchestrator
-from modules.report_generator import generate_pdf
+
+from ui.sidebar import render_sidebar
+from ui.review_page import render_review_page
+from ui.analytics import render_analytics_page
+from ui.report_page import render_report_page
+from ui.assistant import render_assistant_page
+from ui.history import render_history_page
+from ui.settings import render_settings_page
 
 
-# =====================================================
+
+# ==========================================================
 # Page Configuration
-# =====================================================
+# ==========================================================
 
 st.set_page_config(
-    page_title="AI Code Review Agent",
+
+    page_title="AI Code Review & Security Analysis Agent",
+
     page_icon="🤖",
-    layout="wide"
-)
 
+    layout="wide",
 
-# Create Orchestrator
+    initial_sidebar_state="expanded"
 
-orchestrator = Orchestrator()
-
-
-
-# =====================================================
-# Sidebar
-# =====================================================
-
-st.sidebar.title("🤖 AI Reviewer")
-
-
-page = st.sidebar.radio(
-    "Navigation",
-    [
-        "🏠 New Review",
-        "📚 Knowledge Base",
-        "📄 Reports",
-        "🕘 History",
-        "⚙ Settings"
-    ]
-)
-
-
-st.sidebar.divider()
-
-
-st.sidebar.markdown(
-    "### Supported Languages"
-)
-
-
-st.sidebar.success(
-    "Python"
-)
-
-
-st.sidebar.success(
-    "Java"
-)
-
-
-st.sidebar.divider()
-
-
-st.sidebar.info(
-    """
-AI Code Review Agent
-
-Features:
-
-✓ Syntax Validation
-
-✓ Code Quality Analysis
-
-✓ Security Vulnerability Detection
-
-✓ OWASP Based Review
-
-✓ RAG Knowledge Base
-"""
 )
 
 
 
-# =====================================================
-# NEW REVIEW
-# =====================================================
+# ==========================================================
+# Load Custom CSS
+# ==========================================================
 
-if page == "🏠 New Review":
-
-    st.title(
-        "AI Code Review & Security Analysis Agent"
-    )
-
-
-    st.write(
-        """
-Upload a **Python** or **Java** source file,
-or paste your code directly.
-
-The system performs:
-
-- Language Detection
-- Syntax Validation
-- Code Quality Analysis
-- Security Vulnerability Scanning
-- Consolidated Review Report
-"""
-    )
+css_file = os.getenv(
+    "CSS_PATH",
+    "assets/css.css"
+)
 
 
-    st.divider()
+if os.path.exists(css_file):
 
-
-    left_column, right_column = st.columns(
-        [2.3, 1]
-    )
-
-
-
-    # =================================================
-    # Source Code Panel
-    # =================================================
-
-    with left_column:
-
-        st.subheader(
-            "Source Code"
-        )
-
-
-        uploaded_file = st.file_uploader(
-            "Upload Python or Java File",
-            type=[
-                "py",
-                "java"
-            ]
-        )
-
+    with open(
+        css_file,
+        "r",
+        encoding="utf-8"
+    ) as file:
 
         st.markdown(
-            "### OR"
-        )
 
+            f"<style>{file.read()}</style>",
 
-        code = st.text_area(
-            "Paste your code",
-            height=380,
-            placeholder=
-            "Paste Python or Java code here..."
+            unsafe_allow_html=True
+
         )
 
 
 
-    # =================================================
-    # Options Panel
-    # =================================================
+# ==========================================================
+# Session State Initialization
+# ==========================================================
 
-    with right_column:
+if "orchestrator" not in st.session_state:
 
-        st.subheader(
-            "Options"
-        )
+    st.session_state.orchestrator = Orchestrator()
 
 
-        language = st.selectbox(
-            "Programming Language",
-            [
-                "Auto Detect",
-                "Python",
-                "Java"
-            ]
-        )
 
+if "review_result" not in st.session_state:
 
-        analyze = st.button(
-            "Analyze Code",
-            use_container_width=True
-        )
+    st.session_state.review_result = None
 
 
-        st.divider()
 
+if "history" not in st.session_state:
 
-        st.info(
-            """
-### Analysis Includes
+    st.session_state.history = []
 
-✅ Language Detection
 
-✅ Syntax Validation
 
-✅ Code Analysis Agent
+if "chat_history" not in st.session_state:
 
-✅ Security Agent
+    st.session_state.chat_history = []
 
-✅ Severity Classification
 
-✅ Recommendations
-"""
-        )
-    # =====================================================
-    # Analyze Button
-    # =====================================================
 
-    if analyze:
+# ==========================================================
+# Sidebar Navigation
+# ==========================================================
 
-        if uploaded_file is None and code.strip() == "":
+page = render_sidebar()
 
-            st.error(
-                "Please upload a file or paste source code."
-            )
 
 
-        else:
+# ==========================================================
+# Page Routing
+# ==========================================================
 
-            # ---------------------------------------------
-            # Read Source Code
-            # ---------------------------------------------
+if page == "📝 New Review":
 
-            if uploaded_file is not None:
 
-                source_code = uploaded_file.read().decode(
-                    "utf-8"
-                )
+    render_review_page(
 
-                file_name = uploaded_file.name
+        st.session_state.orchestrator
 
-
-            else:
-
-                source_code = code
-
-                file_name = "Pasted Code"
-
-
-            # ---------------------------------------------
-            # Language Detection
-            # ---------------------------------------------
-
-            if language == "Auto Detect":
-
-                language = detect_language(
-                    source_code,
-                    file_name
-                )
-
-            # ---------------------------------------------
-            # Syntax Validation
-            # ---------------------------------------------
-
-            valid, message = validate_code(
-                source_code,
-                language
-            )
-
-
-            st.divider()
-
-
-            st.subheader(
-                "Submission Details"
-            )
-
-
-            col1, col2, col3 = st.columns(3)
-
-
-            col1.metric(
-                "Language",
-                language
-            )
-
-
-            col2.metric(
-                "Lines",
-                len(
-                    source_code.splitlines()
-                )
-            )
-
-
-            col3.metric(
-                "File",
-                file_name
-            )
-
-
-
-            # =====================================================
-            # If Syntax Valid
-            # =====================================================
-
-            if valid:
-
-                st.success(
-                    message
-                )
-
-
-                # ---------------------------------------------
-                # Run Agents
-                # ---------------------------------------------
-
-                result = orchestrator.analyze_code(
-                    source_code,
-                    language
-                )
-
-
-                summary = result.get(
-                    "summary",
-                    {}
-                )
-
-
-                findings = result.get(
-                    "findings",
-                    []
-                )
-
-                # Generate PDF Report
-                pdf_file = generate_pdf(
-                    language,
-                    findings,
-                     {
-                        "Critical": summary.get("CRITICAL", 0),
-                        "High": summary.get("HIGH", 0),
-                        "Medium": summary.get("MEDIUM", 0),
-                        "Low": summary.get("LOW", 0),
-                       "Total": len(findings)
-                         }
-                     )
-
-
-                st.divider()
-
-
-                # =====================================================
-                # Analysis Summary
-                # =====================================================
-
-                st.subheader(
-                    "Analysis Summary"
-                )
-
-
-                col1, col2, col3, col4, col5 = st.columns(5)
-
-
-                col1.metric(
-                    "Critical",
-                    summary.get(
-                        "CRITICAL",
-                        0
-                    )
-                )
-
-
-                col2.metric(
-                    "High",
-                    summary.get(
-                        "HIGH",
-                        0
-                    )
-                )
-
-
-                col3.metric(
-                    "Medium",
-                    summary.get(
-                        "MEDIUM",
-                        0
-                    )
-                )
-
-
-                col4.metric(
-                    "Low",
-                    summary.get(
-                        "LOW",
-                        0
-                    )
-                )
-
-
-                col5.metric(
-                    "Total",
-                    len(findings)
-                )
-
-
-
-                st.divider()
-
-
-                # =====================================================
-                # Findings
-                # =====================================================
-
-                st.subheader(
-                    "Findings"
-                )
-
-
-                if len(findings) == 0:
-
-                    st.success(
-                        "No code quality or security issues detected."
-                    )
-
-
-                else:
-
-                    for index, finding in enumerate(
-                        findings,
-                        start=1
-                    ):
-
-
-                        severity = finding.get(
-                            "severity",
-                            "LOW"
-                        )
-
-
-                        issue_type = finding.get(
-                            "type",
-                            "Issue"
-                        )
-
-
-                        title = (
-                            f"Finding {index} • "
-                            f"{severity} • "
-                            f"{issue_type}"
-                        )
-
-
-                        with st.expander(title):
-
-
-                            left, right = st.columns(2)
-
-
-
-                            with left:
-
-                                st.write(
-                                    "**Agent**"
-                                )
-
-                                st.write(
-                                    finding.get(
-                                        "agent",
-                                        "Unknown"
-                                    )
-                                )
-
-
-                                st.write(
-                                    "**Severity**"
-                                )
-
-                                st.write(
-                                    finding.get(
-                                        "severity",
-                                        "LOW"
-                                    )
-                                )
-
-
-                                st.write(
-                                    "**Line Number**"
-                                )
-
-                                st.write(
-                                    finding.get(
-                                        "line",
-                                        "N/A"
-                                    )
-                                )
-
-
-
-                            with right:
-
-                                st.write(
-                                    "**Issue Type**"
-                                )
-
-                                st.write(
-                                    finding.get(
-                                        "type",
-                                        "Unknown"
-                                    )
-                                )
-
-
-
-                            st.write(
-                                "**Description**"
-                            )
-
-
-                            st.write(
-                                finding.get(
-                                    "description",
-                                    "No description available."
-                                )
-                            )
-
-
-
-                            st.write(
-                                "**Recommendation**"
-                            )
-
-
-                            st.success(
-                                finding.get(
-                                    "recommendation",
-                                    "No recommendation available."
-                                )
-                            )
-
-                # ============================================
-                # Download PDF Report
-                # ============================================
-
-                st.divider()
-
-                with open(pdf_file, "rb") as pdf:
-                    st.download_button(
-                        label="📄 Download PDF Report",
-                        data=pdf,
-                        file_name="AI_Code_Review_Report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True,
-                    )
-
-            # =====================================================
-            # Syntax Invalid
-            # =====================================================
-
-            else:
-
-                st.error(message)
-
-# =====================================================
-# KNOWLEDGE BASE
-# =====================================================
-
-elif page == "📚 Knowledge Base":
-
-    st.title(
-        "Secure Coding Knowledge Base"
     )
 
 
-    st.write(
-        """
-The knowledge base stores secure coding guidelines,
-OWASP documentation, and security references
-used by the RAG pipeline.
-"""
+elif page == "📊 Analytics":
+
+
+    render_analytics_page(
+
+        st.session_state.review_result
+
     )
 
-
-    st.divider()
-
-
-    st.subheader(
-        "Indexed Documents"
-    )
-
-
-    documents = [
-
-        "OWASP Top 10 2025",
-
-        "OWASP Top 10",
-
-        "Broken Access Control",
-
-        "Cryptographic Failures",
-
-        "Insecure Design",
-
-        "Security Misconfiguration",
-
-        "Vulnerable Components",
-
-        "Weak Authentication",
-
-        "SQL Injection",
-
-        "SSRF Protection",
-
-        "XML Security",
-
-        "SSL Security",
-
-        "Java Secure Coding",
-
-        "Python Secure Coding",
-
-        "Python Secrets Module",
-
-        "Pickle Security",
-
-        "Subprocess Security",
-
-        "Logging & Monitoring",
-
-        "Secure Coding Guide"
-    ]
-
-
-    for doc in documents:
-
-        st.write(
-            f"• {doc}"
-        )
-
-
-
-    st.divider()
-
-
-
-    if st.button(
-        "Build Knowledge Base",
-        use_container_width=True
-    ):
-
-
-        with st.spinner(
-            "Building Knowledge Base..."
-        ):
-
-
-            try:
-
-                result = build_knowledge_base()
-
-
-                st.success(
-                    result
-                )
-
-
-            except Exception as e:
-
-                st.error(
-                    f"Knowledge Base Error:\n\n{e}"
-                )
-
-
-
-
-
-# =====================================================
-# REPORTS
-# =====================================================
 
 elif page == "📄 Reports":
 
-    st.title(
-        "Reports"
+
+    render_report_page(
+
+        st.session_state.review_result
+
     )
 
 
-    st.write(
-        """
-All generated code review reports will appear here.
-"""
+elif page == "🤖 AI Assistant":
+
+
+    render_assistant_page(
+
+        st.session_state.review_result
+
     )
 
-
-    st.divider()
-
-
-    st.info(
-        "No reports generated yet."
-    )
-
-
-
-
-
-# =====================================================
-# HISTORY
-# =====================================================
 
 elif page == "🕘 History":
 
-    st.title(
-        "Analysis History"
-    )
+
+    render_history_page()
 
 
-    st.write(
-        """
-Previously analyzed files and security reports
-will appear here.
-"""
-    )
-
-
-    st.divider()
-
-
-    st.info(
-        "History is currently empty."
-    )
-# =====================================================
-# SETTINGS
-# =====================================================
 
 elif page == "⚙ Settings":
 
-    st.title(
-        "Settings"
-    )
 
-
-    st.divider()
+    render_settings_page()
 
 
 
-    theme = st.selectbox(
-        "Application Theme",
-        [
-            "Dark",
-            "Light"
-        ]
-    )
-
-
-
-    default_language = st.selectbox(
-        "Default Language",
-        [
-            "Auto Detect",
-            "Python",
-            "Java"
-        ]
-    )
-
-
-
-    notifications = st.checkbox(
-        "Enable Notifications"
-    )
-
-
-
-    auto_detect = st.checkbox(
-        "Automatically Detect Language",
-        value=True
-    )
-
-
-
-    st.divider()
-
-
-
-    if st.button(
-        "Save Settings",
-        use_container_width=True
-    ):
-
-        st.success(
-            "Settings saved successfully."
-        )
-
-
-
-
-
-# =====================================================
-# FOOTER
-# =====================================================
+# ==========================================================
+# Footer
+# ==========================================================
 
 st.divider()
 
 
-left, center, right = st.columns(3)
+col1, col2, col3 = st.columns(3)
 
 
-
-with left:
+with col1:
 
     st.caption(
         "AI Code Review & Security Analysis Agent"
     )
 
 
-
-with center:
+with col2:
 
     st.caption(
-        "Milestone 2"
+        "Multi-Agent Secure Coding Platform"
     )
 
 
-
-with right:
+with col3:
 
     st.caption(
-        "Python • Java • Streamlit"
+        "Python • Java • LangGraph • Groq • RAG"
     )

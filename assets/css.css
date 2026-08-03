@@ -1,0 +1,302 @@
+/* ===========================================================
+   AI Code Review Agent
+   Modern Dashboard Theme
+=========================================================== */
+
+.block-container{
+    padding-top:1rem;
+    padding-bottom:1rem;
+    padding-left:2rem;
+    padding-right:2rem;
+}
+
+/* Background */
+
+.stApp{
+    background:#0F172A;
+}
+
+/* Sidebar */
+
+section[data-testid="stSidebar"]{
+    background:#111827;
+    border-right:1px solid #334155;
+}
+
+/* Titles */
+
+h1{
+    color:#38BDF8;
+    font-weight:700;
+}
+
+h2{
+    color:white;
+}
+
+h3{
+    color:#E2E8F0;
+}
+
+/* Cards */
+
+div[data-testid="stMetric"]{
+
+    background:#1E293B;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    border:1px solid #334155;
+
+    box-shadow:0 0 12px rgba(0,0,0,.25);
+}
+
+/* Buttons */
+
+.stButton>button{
+
+    width:100%;
+
+    border-radius:12px;
+
+    height:48px;
+
+    background:#2563EB;
+
+    color:white;
+
+    border:none;
+
+    font-weight:600;
+
+    transition:.3s;
+}
+
+.stButton>button:hover{
+
+    background:#1D4ED8;
+
+    transform:scale(1.02);
+}
+
+/* Download Button */
+
+.stDownloadButton>button{
+
+    width:100%;
+
+    background:#16A34A;
+
+    color:white;
+
+    border-radius:12px;
+
+    border:none;
+}
+
+.stDownloadButton>button:hover{
+
+    background:#15803D;
+}
+
+/* Text Area */
+
+textarea{
+
+    border-radius:12px !important;
+
+    border:1px solid #334155 !important;
+
+    background:#0F172A !important;
+
+    color:white !important;
+}
+
+/* Select Box */
+
+div[data-baseweb="select"]{
+
+    background:#1E293B;
+}
+
+/* File Uploader */
+
+section[data-testid="stFileUploader"]{
+
+    border:2px dashed #3B82F6;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    background:#111827;
+}
+
+/* Expander */
+
+details{
+
+    border-radius:12px;
+
+    border:1px solid #334155;
+
+    margin-bottom:12px;
+
+    background:#111827;
+}
+
+/* Tables */
+
+thead tr{
+
+    background:#2563EB;
+
+    color:white;
+}
+
+tbody tr{
+
+    background:#0F172A;
+}
+
+/* DataFrame */
+
+[data-testid="stDataFrame"]{
+
+    border-radius:12px;
+
+    overflow:hidden;
+}
+
+/* Progress */
+
+.stProgress>div>div{
+
+    background:#2563EB;
+}
+
+/* Chat Messages */
+
+.stChatMessage{
+
+    border-radius:14px;
+
+    background:#1E293B;
+
+    border:1px solid #334155;
+}
+
+/* Chat Input */
+
+[data-testid="stChatInput"]{
+
+    border-radius:14px;
+}
+
+/* Robot Floating Button */
+
+.robot-button{
+
+    position:fixed;
+
+    bottom:30px;
+
+    right:30px;
+
+    width:90px;
+
+    height:90px;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    box-shadow:0 0 25px rgba(37,99,235,.5);
+
+    transition:.3s;
+
+    z-index:999;
+}
+
+.robot-button:hover{
+
+    transform:scale(1.1);
+
+    box-shadow:0 0 40px #38BDF8;
+}
+
+/* Dashboard Cards */
+
+.dashboard-card{
+
+    background:#1E293B;
+
+    padding:18px;
+
+    border-radius:14px;
+
+    border:1px solid #334155;
+
+    box-shadow:0 0 10px rgba(0,0,0,.2);
+}
+
+/* Findings */
+
+.finding-critical{
+
+    border-left:6px solid #DC2626;
+}
+
+.finding-high{
+
+    border-left:6px solid #EA580C;
+}
+
+.finding-medium{
+
+    border-left:6px solid #CA8A04;
+}
+
+.finding-low{
+
+    border-left:6px solid #16A34A;
+}
+
+/* Footer */
+
+.footer{
+
+    text-align:center;
+
+    color:#94A3B8;
+
+    margin-top:50px;
+
+    padding:20px;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+
+    width:10px;
+}
+
+::-webkit-scrollbar-track{
+
+    background:#111827;
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#334155;
+
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#3B82F6;
+}
