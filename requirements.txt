@@ -28,3 +28,7 @@ javalang==0.13.0
 reportlab==4.4.3
 
 groq==0.31.1
+
+tree-sitter==0.25.1
+
+tree-sitter-java==0.23.5
