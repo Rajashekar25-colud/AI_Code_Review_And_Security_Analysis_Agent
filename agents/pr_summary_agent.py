@@ -1,111 +1,155 @@
-import os
-
-from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
+
+from rag.groq_model import get_groq_model
 
 
 class PRSummaryAgent:
+    """
+    Generates a concise professional Pull Request Summary.
+
+    Uses only static analysis findings.
+    Avoids sending source code and remediation details
+    to reduce LLM token usage.
+    """
 
     def __init__(self):
 
-        self.llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
-            api_key=os.getenv("GROQ_API_KEY"),
+        self.llm = get_groq_model(
             temperature=0.2
         )
 
 
     def generate_summary(
-            self,
-            source_code,
-            language,
-            findings,
-            remediation
+        self,
+        source_code,
+        language,
+        findings,
+        remediation=None
     ):
+        """
+        Generate PR summary from analysis findings.
+
+        source_code and remediation are kept for
+        compatibility with existing LangGraph workflow.
+        """
 
         if not findings:
 
             return {
                 "agent": "PR Summary Agent",
-                "summary": "No issues were detected."
+                "summary":
+                    "No security or quality issues were detected. "
+                    "The submitted code passed the current analysis checks."
             }
 
 
         prompt = self._build_prompt(
-            source_code,
             language,
-            findings,
-            remediation
+            findings
         )
 
 
-        response = self.llm.invoke(
-            [
-                HumanMessage(content=prompt)
-            ]
-        )
+        try:
+
+            response = self.llm.invoke(
+                [
+                    HumanMessage(
+                        content=prompt
+                    )
+                ]
+            )
 
 
-        return {
-            "agent": "PR Summary Agent",
-            "summary": response.content
-        }
+            return {
+                "agent": "PR Summary Agent",
+                "summary": response.content
+            }
+
+
+        except Exception as e:
+
+            return {
+                "agent": "PR Summary Agent",
+                "summary":
+                    "PR summary generation failed.",
+                "error": str(e)
+            }
 
 
 
     def _build_prompt(
-            self,
-            source_code,
-            language,
-            findings,
-            remediation
+        self,
+        language,
+        findings
     ):
 
-        prompt = f"""
-You are a Senior Software Architect performing a Pull Request review.
+        # Prevent huge prompts
+        findings_text = str(findings)
 
-Create a professional code review summary.
-
-Include:
-
-1. Executive Summary
-2. Overall Code Health
-3. Severity Breakdown
-4. Important Findings
-5. Recommended Priority
-6. Positive Observations
-7. Final Recommendation
+        if len(findings_text) > 4000:
+            findings_text = findings_text[:4000]
 
 
-Rules:
-
-- Use only the provided analysis results.
-- Do not invent issues.
-- Do not invent severity counts.
-- Give recommendations based on findings.
-
+        return f"""
+You are a Senior Software Architect reviewing a Pull Request.
 
 Programming Language:
-
 {language}
 
 
 Static Analysis Findings:
-
-{findings}
-
-
-Remediation Suggestions:
-
-{remediation}
+{findings_text}
 
 
-Source Code:
-
-{source_code}
+Generate a concise professional GitHub Pull Request review.
 
 
-Generate the Pull Request review summary.
+Use exactly these sections:
+
+
+1. Executive Summary
+
+Summarize the overall purpose and detected issues.
+
+
+2. Overall Code Health
+
+Describe the current quality and security status.
+
+
+3. Severity Breakdown
+
+Mention only severity counts present in findings.
+
+
+4. Important Findings
+
+List the important detected issues.
+
+
+5. Recommended Priority
+
+Explain which issues should be fixed first.
+
+
+6. Positive Observations
+
+Mention good practices found in the code.
+
+
+7. Final Recommendation
+
+Give approve/reject recommendation based only on findings.
+
+
+Rules:
+
+- Use ONLY provided findings.
+- Do NOT invent vulnerabilities.
+- Do NOT invent severity numbers.
+- Do NOT include corrected code.
+- Do NOT include OWASP explanations.
+- Do NOT include remediation steps.
+- Keep response below 300 words.
+- Write like a professional GitHub code reviewer.
 """
-
-        return prompt

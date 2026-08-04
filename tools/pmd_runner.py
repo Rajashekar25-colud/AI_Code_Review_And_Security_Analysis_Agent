@@ -44,22 +44,16 @@ class PMDRunner:
                 "json"
             ]
 
+            creationflags = 0
+            if os.name == "nt":
+                creationflags = subprocess.CREATE_NO_WINDOW
+
             result = subprocess.run(
                 command,
                 capture_output=True,
-                text=True
+                text=True,
+                creationflags=creationflags
             )
-
-            # Debug Output
-            print("=" * 60)
-            print("PMD COMMAND:")
-            print(" ".join(command))
-            print("RETURN CODE:", result.returncode)
-            print("STDOUT:")
-            print(result.stdout)
-            print("STDERR:")
-            print(result.stderr)
-            print("=" * 60)
 
             # PMD returns:
             # 0 -> No violations
@@ -73,7 +67,6 @@ class PMDRunner:
             try:
                 report = json.loads(result.stdout)
             except json.JSONDecodeError:
-                print("PMD JSON Parsing Error")
                 return findings
 
             for file_data in report.get("files", []):
@@ -108,10 +101,8 @@ class PMDRunner:
                         }
                     )
 
-        except Exception as e:
-
-            print("PMD Runner Exception:")
-            print(str(e))
+        except Exception:
+            return findings
 
         finally:
 

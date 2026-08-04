@@ -62,10 +62,16 @@ class SpotBugsRunner:
             )
 
 
+            creationflags = 0
+            if os.name == "nt":
+                creationflags = subprocess.CREATE_NO_WINDOW
+
+
             result = subprocess.run(
                 command,
                 capture_output=True,
-                text=True
+                text=True,
+                creationflags=creationflags
             )
 
 
@@ -160,12 +166,8 @@ class SpotBugsRunner:
                 )
 
 
-        except Exception as e:
-
-            print(
-                "SpotBugs Error:",
-                e
-            )
+        except Exception:
+            return findings
 
 
         finally:

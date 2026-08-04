@@ -6,12 +6,14 @@ class JavaSecurityScanner:
     """
     Java AST Analyzer.
 
-    Uses Tree-sitter for Java parsing.
-    No vulnerability rules.
-    No regex detection.
-    Security analysis is handled by AI/RAG agent.
-    """
+    Uses Tree-sitter for parsing Java source code.
 
+    No vulnerability rules.
+    No regex.
+    No hardcoded security detection.
+
+    Only extracts AST for downstream AI/RAG analysis.
+    """
 
     def __init__(self):
 
@@ -21,89 +23,133 @@ class JavaSecurityScanner:
             tree_sitter_java.language()
         )
 
-        # tree-sitter 0.26+
+        # tree-sitter >=0.25
         self.parser.language = java
 
+    def get_text(
+        self,
+        node,
+        source_bytes
+    ):
 
-
-    def get_text(self, node, code):
-
-        return code[
+        return source_bytes[
             node.start_byte:
             node.end_byte
-        ]
+        ].decode(
+            "utf-8",
+            errors="replace"
+        )
 
+    def extract_node(
+        self,
+        root,
+        source_bytes
+    ):
 
+        root_data = {
 
-    def extract_node(self, node, code):
+            "type": root.type,
 
-        data = {
-
-            "type":
-            node.type,
-
-            "text":
-            self.get_text(
-                node,
-                code
+            "text": self.get_text(
+                root,
+                source_bytes
             ),
 
-            "line":
-            node.start_point[0] + 1
+            "line": root.start_point[0] + 1
         }
 
+        stack = [
+            (
+                root,
+                root_data
+            )
+        ]
 
-        children = []
+        while stack:
 
+            node, node_dict = stack.pop()
 
-        for child in node.children:
+            children = []
 
-            children.append(
+            for child in node.children:
 
-                self.extract_node(
-                    child,
-                    code
+                child_dict = {
+
+                    "type": child.type,
+
+                    "text": self.get_text(
+                        child,
+                        source_bytes
+                    ),
+
+                    "line": child.start_point[0] + 1
+                }
+
+                children.append(
+                    child_dict
                 )
 
-            )
+                stack.append(
+                    (
+                        child,
+                        child_dict
+                    )
+                )
 
+            if children:
 
-        if children:
+                node_dict["children"] = children
 
-            data["children"] = children
+        return root_data
 
-
-        return data
-
-
-
-    def run(self, code):
-
+    def run(
+        self,
+        code
+    ):
         """
-        Returns Java AST information.
+        Parses Java source and returns AST information.
 
-        SecurityAgent + RAG + Groq
-        will analyze vulnerabilities.
+        Security detection is intentionally delegated to
+        the LLM/RAG pipeline.
         """
 
+        source_bytes = code.encode(
+            "utf-8"
+        )
 
         tree = self.parser.parse(
-
-            bytes(
-                code,
-                "utf8"
-            )
-
+            source_bytes
         )
-
-
-        root = tree.root_node
-
 
         ast_data = self.extract_node(
-            root,
-            code
+            tree.root_node,
+            source_bytes
         )
 
+        return [
+            {
+                "agent":
+                "Java AST Analyzer",
 
-        return ast_data
+                "tool":
+                "Tree-sitter",
+
+                "type":
+                "Java AST",
+
+                "severity":
+                "INFO",
+
+                "line":
+                1,
+
+                "description":
+                "Java AST generated successfully.",
+
+                "recommendation":
+                "Use the AST as input for AI/RAG security analysis.",
+
+                "ast":
+                ast_data
+            }
+        ]

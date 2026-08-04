@@ -1,21 +1,29 @@
-import os
-
-from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
+
+from rag.groq_model import get_groq_model
 
 
 class RemediationAgent:
+    """
+    Generates AI-powered remediation suggestions
+    for code review findings.
+
+    Optimized for Groq token limits.
+    """
 
     def __init__(self):
 
-        self.llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
-            api_key=os.environ["GROQ_API_KEY"],
+        self.llm = get_groq_model(
             temperature=0.2
         )
 
 
-    def generate(self, findings, source_code, language=None):
+    def generate(
+        self,
+        findings,
+        source_code,
+        language=None
+    ):
 
         if not findings:
 
@@ -32,75 +40,90 @@ class RemediationAgent:
 
         prompt = self._build_prompt(
             findings,
-            source_code,
             language
         )
 
 
-        response = self.llm.invoke(
-            [
-                HumanMessage(content=prompt)
-            ]
-        )
+        try:
+
+            response = self.llm.invoke(
+                [
+                    HumanMessage(
+                        content=prompt
+                    )
+                ]
+            )
 
 
-        return {
-            "agent": "Remediation Agent",
-            "recommendations": response.content
-        }
+            return {
+                "agent": "Remediation Agent",
+                "recommendations": response.content
+            }
+
+
+        except Exception as e:
+
+            return {
+                "agent": "Remediation Agent",
+                "error": str(e)
+            }
 
 
 
-    def _build_prompt(self, findings, source_code, language=None):
+    def _build_prompt(
+        self,
+        findings,
+        language=None
+    ):
 
-        prompt = f"""
+        findings_text = str(findings)
+
+
+        # Limit input size to avoid Groq 413 error
+        if len(findings_text) > 5000:
+            findings_text = findings_text[:5000]
+
+
+        return f"""
 You are a Senior Secure Software Engineer.
 
-Your task is to provide remediation guidance for the
-following code review findings.
+Generate a concise remediation report.
 
 Programming Language:
 {language}
 
 
-For every finding provide:
+Security Findings:
+
+{findings_text}
+
+
+For each finding include:
 
 1. Issue Name
 
-2. Security/Quality Risk Explanation
+2. Risk Explanation
 
-3. Severity Level
+3. Severity
 
 4. Recommended Fix
 
-5. Secure Coding Best Practice
+5. Secure Coding Practice
 
-6. Corrected Code Example
-
-
-Important Rules:
-
-- Do not create hardcoded credentials, API keys, passwords, tokens, or secrets.
-- Do not hardcode user-specific values.
-- Use environment variables or secure configuration methods.
-- Keep the same programming language as the submitted code.
-- Use placeholders where sensitive values are required.
-- Follow OWASP Secure Coding Guidelines.
-- Provide practical developer-friendly fixes.
+6. Short Corrected Code Example
 
 
-Code Review Findings:
+Rules:
 
-{findings}
+- Use only provided findings.
+- Do not invent vulnerabilities.
+- Do not analyze unavailable code.
+- Do not include OWASP explanations.
+- Do not include long documentation.
+- Never create real secrets.
+- Never include API keys/passwords/tokens.
+- Use placeholders for sensitive values.
+- Keep response below 700 words.
 
-
-Original Source Code:
-
-{source_code}
-
-
-Generate a detailed remediation report.
+Generate the remediation report.
 """
-
-
-        return prompt
