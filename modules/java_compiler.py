@@ -7,13 +7,10 @@ from pathlib import Path
 
 class JavaCompiler:
     """
-    Compiles Java source code dynamically.
+    Dynamically compiles Java source code if javac is available.
 
-    Features:
-    - Detects the public class name automatically.
-    - Uses a temporary working directory.
-    - Returns the compiled class directory.
-    - No hardcoded filenames or paths.
+    On platforms without a JDK (e.g. Streamlit Cloud),
+    compilation is skipped gracefully instead of crashing.
     """
 
     PUBLIC_CLASS_PATTERN = re.compile(
@@ -22,12 +19,11 @@ class JavaCompiler:
 
     def __init__(self, javac_path=None):
         self.javac = javac_path or shutil.which("javac")
+        self.available = self.javac is not None
 
-        if not self.javac:
-            raise RuntimeError(
-                "javac was not found. "
-                "Install the JDK or set the JAVAC_PATH environment variable."
-            )
+    def is_available(self):
+        """Returns True if javac is available."""
+        return self.available
 
     def _extract_public_class_name(self, source_code: str) -> str:
         match = self.PUBLIC_CLASS_PATTERN.search(source_code)
@@ -41,11 +37,22 @@ class JavaCompiler:
 
     def compile(self, source_code: str):
         """
-        Compiles Java source code.
+        Compile Java source code.
 
         Returns:
-            str: directory containing compiled .class files
+            dict containing compilation status.
         """
+
+        if not self.available:
+            return {
+                "status": "skipped",
+                "success": False,
+                "message": (
+                    "Java compiler (javac) is not available on this system. "
+                    "Compilation skipped."
+                ),
+                "class_dir": None,
+            }
 
         class_name = self._extract_public_class_name(source_code)
 
@@ -55,7 +62,7 @@ class JavaCompiler:
 
         java_file.write_text(
             source_code,
-            encoding="utf-8"
+            encoding="utf-8",
         )
 
         result = subprocess.run(
@@ -63,15 +70,23 @@ class JavaCompiler:
                 self.javac,
                 "-d",
                 temp_dir,
-                str(java_file)
+                str(java_file),
             ],
             capture_output=True,
-            text=True
+            text=True,
         )
 
         if result.returncode != 0:
-            raise RuntimeError(
-                f"Java compilation failed:\n{result.stderr}"
-            )
+            return {
+                "status": "failed",
+                "success": False,
+                "message": result.stderr,
+                "class_dir": None,
+            }
 
-        return temp_dir
+        return {
+            "status": "success",
+            "success": True,
+            "message": "Compilation successful.",
+            "class_dir": temp_dir,
+        }
