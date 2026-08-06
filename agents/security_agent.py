@@ -1,12 +1,13 @@
 import logging
 import os
 
-
 from tools.bandit_runner import BanditRunner
 from tools.spotbugs_runner import SpotBugsRunner
 from tools.java_security_scanner import JavaSecurityScanner
+from tools.python_security_scanner import scan_python_security
 
 from agents.java_security_analyzer import JavaSecurityAnalyzer
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ class SecurityAgent:
 
     Python:
         - Bandit security analysis
+        - Custom AST security analysis
 
     Java:
         - Java AST extraction
@@ -40,7 +42,7 @@ class SecurityAgent:
 
 
         # -----------------------------
-        # Python Analyzer
+        # Python Security Analyzer
         # -----------------------------
 
         self.bandit = BanditRunner()
@@ -60,9 +62,7 @@ class SecurityAgent:
         # RAG + Groq
         # -----------------------------
 
-        self.java_ai_analyzer = (
-            JavaSecurityAnalyzer()
-        )
+        self.java_ai_analyzer = JavaSecurityAnalyzer()
 
 
 
@@ -100,22 +100,18 @@ class SecurityAgent:
         stop complete review pipeline.
         """
 
-
         try:
-
 
             result = function(
                 *args,
                 **kwargs
             )
 
-
             return result or []
 
 
 
         except Exception as error:
-
 
             logger.exception(
                 "%s failed",
@@ -173,7 +169,6 @@ class SecurityAgent:
 
         if not code:
 
-
             return {
 
                 "agent":
@@ -192,6 +187,7 @@ class SecurityAgent:
 
 
 
+
         language = (
             language or ""
         ).lower()
@@ -202,7 +198,6 @@ class SecurityAgent:
 
 
             return {
-
 
                 "agent":
                 "Security Vulnerability Agent",
@@ -224,12 +219,17 @@ class SecurityAgent:
 
 
 
+
         # ==================================================
         # PYTHON SECURITY ANALYSIS
         # ==================================================
 
         if language == "python":
 
+
+            # -----------------------------
+            # Bandit Analysis
+            # -----------------------------
 
             python_findings = self._run_tool(
 
@@ -245,6 +245,29 @@ class SecurityAgent:
             findings.extend(
                 python_findings
             )
+
+
+
+            # -----------------------------
+            # Custom Python AST Analysis
+            # -----------------------------
+
+            python_ast_findings = self._run_tool(
+
+                "python_ast_security_scanner",
+
+                scan_python_security,
+
+                code
+
+            )
+
+
+            findings.extend(
+                python_ast_findings
+            )
+
+
 
 
 
@@ -275,21 +298,20 @@ class SecurityAgent:
 
 
 
+
             # --------------------------------------
             # Step 2
             # OWASP RAG + Groq Analysis
             # --------------------------------------
 
-            java_security_findings = (
-                self._run_tool(
+            java_security_findings = self._run_tool(
 
-                    "java_ai_security_analyzer",
+                "java_ai_security_analyzer",
 
-                    self.java_ai_analyzer.analyze,
+                self.java_ai_analyzer.analyze,
 
-                    code
+                code
 
-                )
             )
 
 
@@ -297,6 +319,7 @@ class SecurityAgent:
             findings.extend(
                 java_security_findings
             )
+
 
 
 
@@ -323,7 +346,6 @@ class SecurityAgent:
                 findings.extend(
                     spotbugs_findings
                 )
-
 
 
 

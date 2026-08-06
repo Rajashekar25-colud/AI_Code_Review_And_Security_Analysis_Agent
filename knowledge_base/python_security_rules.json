@@ -1,0 +1,276 @@
+{
+  "rules": [
+
+    {
+      "id": "PY-SQL-001",
+      "name": "SQL Injection",
+      "category": "injection",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "execute",
+          "executemany",
+          "cursor.execute"
+        ],
+        "unsafe": [
+          "concat",
+          "format",
+          "fstring"
+        ]
+      },
+      "description":
+      "Dynamic SQL query construction may allow SQL injection.",
+      "recommendation":
+      "Use parameterized queries and prepared statements."
+    },
+
+
+    {
+      "id": "PY-XSS-001",
+      "name": "Cross Site Scripting",
+      "category": "web_security",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "render_template_string"
+        ]
+      },
+      "description":
+      "User-controlled data may be rendered as HTML.",
+      "recommendation":
+      "Escape output and sanitize user input."
+    },
+
+
+    {
+      "id": "PY-CSRF-001",
+      "name": "CSRF Vulnerability",
+      "category": "web_security",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "request.form",
+          "request.json"
+        ]
+      },
+      "description":
+      "State-changing requests may lack CSRF protection.",
+      "recommendation":
+      "Enable CSRF tokens using Flask-WTF or equivalent."
+    },
+
+
+    {
+      "id": "PY-SECRET-001",
+      "name": "Hardcoded Secret",
+      "category": "secrets_management",
+      "severity": "HIGH",
+      "patterns": {
+
+        "variables": [
+          "password",
+          "secret",
+          "token",
+          "api_key",
+          "apikey",
+          "private_key",
+          "access_key"
+        ],
+
+        "values": [
+          "ghp_",
+          "sk_",
+          "AIza",
+          "AKIA"
+        ]
+
+      },
+      "description":
+      "Sensitive credentials are stored in source code.",
+      "recommendation":
+      "Use environment variables or secret managers."
+    },
+
+
+    {
+      "id": "PY-CMD-001",
+      "name": "Command Injection",
+      "category": "injection",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "os.system",
+          "popen",
+          "subprocess",
+          "shell"
+        ]
+      },
+      "description":
+      "Unsafe command execution detected.",
+      "recommendation":
+      "Avoid shell execution and validate input."
+    },
+
+
+    {
+      "id": "PY-YAML-001",
+      "name": "Unsafe YAML Deserialization",
+      "category": "deserialization",
+      "severity": "MEDIUM",
+      "patterns": {
+        "sink": [
+          "yaml.load"
+        ]
+      },
+      "description":
+      "Unsafe YAML loading can execute malicious objects.",
+      "recommendation":
+      "Use yaml.safe_load()."
+    },
+
+
+    {
+      "id": "PY-PICKLE-001",
+      "name": "Unsafe Pickle Deserialization",
+      "category": "deserialization",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "pickle.load",
+          "pickle.loads"
+        ]
+      },
+      "description":
+      "Pickle can execute arbitrary code during deserialization.",
+      "recommendation":
+      "Avoid pickle with untrusted input."
+    },
+
+
+    {
+      "id": "PY-CRYPTO-001",
+      "name": "Weak Cryptography",
+      "category": "cryptography",
+      "severity": "MEDIUM",
+      "patterns": {
+        "sink": [
+          "md5",
+          "sha1"
+        ]
+      },
+      "description":
+      "Weak hashing algorithms are vulnerable.",
+      "recommendation":
+      "Use SHA-256 or stronger algorithms."
+    },
+
+
+    {
+      "id": "PY-RANDOM-001",
+      "name": "Insecure Random",
+      "category": "cryptography",
+      "severity": "MEDIUM",
+      "patterns": {
+        "sink": [
+          "random.randint",
+          "random.random"
+        ]
+      },
+      "description":
+      "Python random module is not cryptographically secure.",
+      "recommendation":
+      "Use secrets module for security tokens."
+    },
+
+
+    {
+      "id": "PY-DEBUG-001",
+      "name": "Debug Mode Enabled",
+      "category": "configuration",
+      "severity": "MEDIUM",
+      "patterns": {
+        "sink": [
+          "debug=True"
+        ]
+      },
+      "description":
+      "Debug mode exposes sensitive information.",
+      "recommendation":
+      "Disable debug mode in production."
+    },
+
+
+    {
+      "id": "PY-HTTP-001",
+      "name": "Insecure HTTP Connection",
+      "category": "communication",
+      "severity": "MEDIUM",
+      "patterns": {
+        "values": [
+          "http://"
+        ]
+      },
+      "description":
+      "Unencrypted HTTP communication detected.",
+      "recommendation":
+      "Use HTTPS."
+    },
+
+
+    {
+      "id": "PY-PATH-001",
+      "name": "Path Traversal",
+      "category": "file_security",
+      "severity": "HIGH",
+      "patterns": {
+        "values": [
+          "../"
+        ],
+        "sink": [
+          "open",
+          "read"
+        ]
+      },
+      "description":
+      "User-controlled file paths may access unauthorized files.",
+      "recommendation":
+      "Validate and sanitize file paths."
+    },
+
+
+    {
+      "id": "PY-SSRF-001",
+      "name": "Server Side Request Forgery",
+      "category": "web_security",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "requests.get",
+          "requests.post"
+        ]
+      },
+      "description":
+      "Server may make requests to attacker-controlled URLs.",
+      "recommendation":
+      "Validate allowed URLs and destinations."
+    },
+
+
+    {
+      "id": "PY-TEMPLATE-001",
+      "name": "Template Injection",
+      "category": "injection",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "jinja2.Template"
+        ]
+      },
+      "description":
+      "Dynamic templates may execute unsafe expressions.",
+      "recommendation":
+      "Avoid rendering user-controlled templates."
+    }
+
+  ]
+}

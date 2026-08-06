@@ -7,25 +7,9 @@ from langchain_groq import ChatGroq
 load_dotenv()
 
 
-# Default model for project usage
-DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
-
-
 def get_groq_model(
     temperature: float = 0.2
 ):
-    """
-    Returns configured Groq LLM instance.
-
-    Environment variables:
-
-    GROQ_API_KEY  -> Required
-    GROQ_MODEL    -> Optional
-
-    Example:
-
-    GROQ_MODEL=llama-3.3-70b-versatile
-    """
 
     api_key = os.getenv(
         "GROQ_API_KEY"
@@ -40,9 +24,15 @@ def get_groq_model(
 
 
     model = os.getenv(
-        "GROQ_MODEL",
-        DEFAULT_GROQ_MODEL
+        "GROQ_MODEL"
     )
+
+
+    if not model:
+
+        raise ValueError(
+            "GROQ_MODEL is not configured."
+        )
 
 
     return ChatGroq(
@@ -51,6 +41,8 @@ def get_groq_model(
 
         model=model,
 
-        temperature=temperature
+        temperature=temperature,
+
+        max_tokens=512
 
     )
