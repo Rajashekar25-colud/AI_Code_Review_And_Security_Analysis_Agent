@@ -101,111 +101,90 @@ Allow developers to ask follow-up questions using a RAG-powered chatbot grounded
 - RAG-powered conversational assistant
 
 ---
+## 🏗️ System Architecture
 
-# 🏗️ System Architecture
-
-                              👨‍💻 Developer
-                                    │
-             Paste Code / Upload Python (.py) or Java (.java)
-                                    │
-                                    ▼
-                     ┌─────────────────────────────┐
-                     │   Code Submission Module    │
-                     │  • Paste Code              │
-                     │  • File Upload             │
-                     └─────────────────────────────┘
-                                    │
-                                    ▼
-                     ┌─────────────────────────────┐
-                     │ Language Detection Module   │
-                     │ Syntax Validation Module    │
-                     └─────────────────────────────┘
-                                    │
-                                    ▼
-                 ┌─────────────────────────────────────────┐
-                 │      LangGraph Orchestrator Agent       │
-                 │ Coordinates Complete Review Pipeline    │
-                 └─────────────────────────────────────────┘
-                           │                    │
-          ┌────────────────┘                    └────────────────┐
-          ▼                                                      ▼
-┌──────────────────────────────┐                ┌──────────────────────────────┐
-│     Code Analysis Agent      │                │   Security Vulnerability     │
-│                              │                │          Agent               │
-├──────────────────────────────┤                ├──────────────────────────────┤
-│ Python Analysis              │                │ Python Security              │
-│ • Pylint                     │                │ • Bandit                     │
-│ • Radon                      │                │ • Custom OWASP Rules         │
-│ • Custom Quality Rules       │                │                              │
-│                              │                │ Java Security                │
-│ Java Analysis                │                │ • SpotBugs                   │
-│ • PMD                        │                │ • Java AST Analysis          │
-│ • Checkstyle                 │                │ • Custom OWASP Rules         │
-│ • Custom Quality Rules       │                │                              │
-└──────────────────────────────┘                └──────────────────────────────┘
-                           │                    │
-                           └──────────┬─────────┘
-                                      ▼
-                    ┌─────────────────────────────────┐
-                    │   Unified Findings Repository   │
-                    │ • Merge Quality Findings        │
-                    │ • Merge Security Findings       │
-                    │ • Assign Severity Levels        │
-                    └─────────────────────────────────┘
-                                      │
-                                      ▼
-                    ┌─────────────────────────────────┐
-                    │      Remediation Agent          │
-                    ├─────────────────────────────────┤
-                    │ • AI Fix Suggestions            │
-                    │ • Secure Coding Practices       │
-                    │ • Corrected Code Examples       │
-                    │ • Best Practice Explanations    │
-                    └─────────────────────────────────┘
-                                      │
-                                      ▼
-                    ┌─────────────────────────────────┐
-                    │        PR Summary Agent         │
-                    ├─────────────────────────────────┤
-                    │ • Executive Summary             │
-                    │ • Severity Breakdown            │
-                    │ • Code Health Score             │
-                    │ • Final Recommendation          │
-                    └─────────────────────────────────┘
-                                      │
-                                      ▼
-                    ┌─────────────────────────────────┐
-                    │    Streamlit Developer Portal   │
-                    ├─────────────────────────────────┤
-                    │ • Findings Dashboard            │
-                    │ • Analytics                     │
-                    │ • Health Score                  │
-                    │ • Severity Charts              │
-                    │ • PDF Report Download          │
-                    └─────────────────────────────────┘
-                                      │
-                                      │
-                     Developer asks follow-up questions
-                                      │
-                                      ▼
-                    ┌─────────────────────────────────┐
-                    │ Conversational Code Assistant   │
-                    ├─────────────────────────────────┤
-                    │ • Groq LLM                      │
-                    │ • LangChain                     │
-                    │ • RAG Pipeline                  │
-                    └─────────────────────────────────┘
-                                      │
-                                      ▼
-                    ┌─────────────────────────────────┐
-                    │ Secure Coding Knowledge Base    │
-                    ├─────────────────────────────────┤
-                    │ • OWASP Top 10                 │
-                    │ • Java Secure Coding Guide     │
-                    │ • Python Secure Coding Guide   │
-                    │ • Secure Coding Best Practices │
-                    │ • ChromaDB Vector Database     │
-                    └─────────────────────────────────┘
+```text
+                           👨‍💻 Developer
+                                 │
+          Paste Code / Upload Python or Java File
+                                 │
+                                 ▼
+                   ┌─────────────────────────┐
+                   │ Code Submission Module  │
+                   └─────────────────────────┘
+                                 │
+                                 ▼
+                 ┌────────────────────────────┐
+                 │ Language Detection         │
+                 │ Syntax Validation          │
+                 └────────────────────────────┘
+                                 │
+                                 ▼
+                 ┌────────────────────────────┐
+                 │ LangGraph Orchestrator     │
+                 │ Coordinates All Agents     │
+                 └────────────────────────────┘
+                                 │
+                ┌────────────────┴────────────────┐
+                ▼                                 ▼
+     ┌────────────────────────┐      ┌────────────────────────┐
+     │ Code Analysis Agent    │      │ Security Agent         │
+     ├────────────────────────┤      ├────────────────────────┤
+     │ • PMD                  │      │ • Bandit              │
+     │ • Checkstyle           │      │ • SpotBugs            │
+     │ • Pylint               │      │ • OWASP Rules         │
+     │ • Radon                │      │ • Custom Rules        │
+     │ • Custom Quality Rules │      └────────────────────────┘
+     └────────────────────────┘
+                │                         │
+                └────────────┬────────────┘
+                             ▼
+             ┌────────────────────────────────┐
+             │ Unified Findings Repository    │
+             └────────────────────────────────┘
+                             │
+                             ▼
+             ┌────────────────────────────────┐
+             │ Remediation Agent              │
+             │ • Fix Recommendations          │
+             │ • Secure Coding Practices      │
+             │ • Corrected Code Examples      │
+             └────────────────────────────────┘
+                             │
+                             ▼
+             ┌────────────────────────────────┐
+             │ PR Summary Agent               │
+             │ • Executive Summary            │
+             │ • Severity Breakdown           │
+             │ • Code Health Score            │
+             └────────────────────────────────┘
+                             │
+                             ▼
+             ┌────────────────────────────────┐
+             │ Streamlit Developer Portal     │
+             │ • Findings                     │
+             │ • Dashboard                    │
+             │ • Analytics                    │
+             │ • PDF Report                   │
+             └────────────────────────────────┘
+                             │
+                             ▼
+             ┌────────────────────────────────┐
+             │ Conversational Code Assistant  │
+             │ (Groq LLM + LangChain + RAG)   │
+             └────────────────────────────────┘
+                             │
+                             ▼
+             ┌────────────────────────────────┐
+             │ Secure Coding Knowledge Base   │
+             │ • OWASP Top 10                 │
+             │ • Java Secure Coding           │
+             │ • Python Guidelines            │
+             │ • Best Practices               │
+             │ • ChromaDB Vector Database     │
+             └────────────────────────────────┘
+```
+                    
 ```# 📂 Project Structure
 
 ```
