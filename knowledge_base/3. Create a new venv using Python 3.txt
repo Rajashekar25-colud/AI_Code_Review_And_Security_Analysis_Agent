@@ -1,0 +1,24 @@
+3. Create a new venv using Python 3.11
+py -3.11 -m venv venv
+
+Activate it:
+
+venv\Scripts\activate
+
+Verify:
+
+python --version
+
+It should show:
+
+Python 3.11.9
+
+app.py
+✅ review_page.py
+✅ sidebar.py
+✅ dashboard.py
+✅ analytics.py
+✅ history.py
+✅ report_page.py
+✅ assistant.py
+✅ settings.py
