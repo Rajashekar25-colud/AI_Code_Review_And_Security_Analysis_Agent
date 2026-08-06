@@ -184,71 +184,69 @@ Allow developers to ask follow-up questions using a RAG-powered chatbot grounded
              │ • ChromaDB Vector Database     │
              └────────────────────────────────┘
 ```
-                    
-```# 📂 Project Structure
 
-```
+
+## 📂 Project Structure
+
+```text
 AI-Code-Review-Agent/
 │
-├── app.py                         # Streamlit entry point
-├── requirements.txt               # Project dependencies
-├── README.md
-├── .env
+├── app.py                          # Streamlit entry point
+├── requirements.txt                # Project dependencies
+├── README.md                       # Project documentation
+├── .env                            # Environment variables
 │
 ├── agents/
-│   ├── orchestrator.py
-│   ├── code_analysis_agent.py
-│   ├── security_agent.py
-│   ├── remediation_agent.py
-│   ├── pr_summary_agent.py
-│   ├── conversational_assistant.py
-│   └── java_security_analyzer.py
+│   ├── orchestrator.py             # Coordinates all AI agents
+│   ├── code_analysis_agent.py      # Code quality analysis
+│   ├── security_agent.py           # Security vulnerability detection
+│   ├── remediation_agent.py        # Generates fix recommendations
+│   ├── pr_summary_agent.py         # Creates PR review summary
+│   ├── conversational_assistant.py # RAG-powered AI assistant
+│   └── java_security_analyzer.py   # Java-specific security analysis
 │
 ├── modules/
-│   ├── submission.py
-│   ├── language_detector.py
-│   ├── syntax_validator.py
-│   ├── java_compiler.py
-│   ├── report_generator.py
-│   └── file_handler.py
+│   ├── submission.py               # Code submission handling
+│   ├── language_detector.py        # Python/Java detection
+│   ├── syntax_validator.py         # Syntax validation
+│   ├── java_compiler.py            # Java compilation
+│   ├── report_generator.py         # PDF report generation
+│   └── file_handler.py             # File upload handling
 │
 ├── tools/
-│   ├── pylint_runner.py
-│   ├── radon_runner.py
-│   ├── bandit_runner.py
-│   ├── pmd_runner.py
-│   ├── checkstyle_runner.py
-│   ├── spotbugs_runner.py
-│   ├── java_security_scanner.py
-│   ├── java_quality_analyzer.py
-│   └── python_security_scanner.py
+│   ├── pylint_runner.py            # Python quality analysis
+│   ├── radon_runner.py             # Complexity analysis
+│   ├── bandit_runner.py            # Python security scanner
+│   ├── pmd_runner.py               # Java quality analysis
+│   ├── checkstyle_runner.py        # Java coding standards
+│   ├── spotbugs_runner.py          # Java bug detection
+│   ├── java_security_scanner.py    # Java security scanner
+│   ├── java_quality_analyzer.py    # Java quality analyzer
+│   └── python_security_scanner.py  # Python security scanner
 │
 ├── rag/
-│   ├── loader.py
-│   ├── splitter.py
-│   ├── embedding.py
-│   ├── vector_store.py
-│   ├── build_knowledgebase.py
-│   └── groq_model.py
+│   ├── loader.py                   # Loads knowledge documents
+│   ├── splitter.py                 # Splits documents into chunks
+│   ├── embedding.py                # Generates embeddings
+│   ├── vector_store.py             # ChromaDB vector storage
+│   ├── build_knowledgebase.py      # Builds RAG knowledge base
+│   └── groq_model.py               # Groq LLM integration
 │
 ├── ui/
-│   ├── review_page.py
-│   ├── assistant.py
-│   ├── analytics.py
-│   ├── dashboard.py
-│   ├── reports.py
-│   ├── history.py
-│   ├── sidebar.py
-│   └── settings.py
+│   ├── review_page.py              # Code review page
+│   ├── assistant.py                # AI chat assistant
+│   ├── analytics.py                # Analytics dashboard
+│   ├── dashboard.py                # Main dashboard
+│   ├── reports.py                  # Report viewer
+│   ├── history.py                  # Review history
+│   ├── sidebar.py                  # Navigation sidebar
+│   └── settings.py                 # Application settings
 │
-├── knowledge_base/
-│
-├── generated_reports/
-│
-└── chroma_db/
+├── knowledge_base/                 # OWASP & secure coding documents
+├── generated_reports/              # Generated PDF reports
+└── chroma_db/                      # ChromaDB vector database
 ```
 
----
 
 # 🤖 Multi-Agent Architecture
 
