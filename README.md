@@ -1,729 +1,881 @@
 # 🤖 AI Code Review & Security Analysis Agent
 
-
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![Java](https://img.shields.io/badge/Java-Supported-orange)
 ![Streamlit](https://img.shields.io/badge/Framework-Streamlit-red)
-![AI](https://img.shields.io/badge/AI-RAG%20Powered-purple)
-![LangGraph](https://img.shields.io/badge/Agent-LangGraph-green)
-![ChromaDB](https://img.shields.io/badge/VectorDB-ChromaDB-yellow)
+![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-success)
+![Groq](https://img.shields.io/badge/LLM-Groq-purple)
+![RAG](https://img.shields.io/badge/RAG-Enabled-brightgreen)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Milestone%203%20Completed-success)
 
+---
 
 # 📌 Project Title
 
-# AI Code Review & Security Analysis Agent
+## AI Code Review & Security Analysis Agent
 
+An intelligent **AI-powered multi-agent platform** that automatically reviews **Python** and **Java** source code for:
+
+- Code Quality Issues
+- Security Vulnerabilities
+- OWASP Violations
+- Secure Coding Practices
+- AI-powered Remediation
+- Pull Request Review Summary
+- RAG-powered Conversational Assistant
 
 ---
 
 # 📖 Project Overview
 
+Modern software projects grow rapidly, making manual code reviews slow, inconsistent, and difficult to scale.
 
-Software development teams frequently face challenges such as:
+Developers often miss:
 
-- Inconsistent code quality
-- Undetected security vulnerabilities
-- Time-consuming manual code reviews
-- Lack of secure coding guidance
-- Difficulty maintaining large codebases
-
-
-Traditional manual code reviews are:
-
-- Slow
-- Subjective
-- Difficult to scale
-- Dependent on developer expertise
-
-
-The **AI Code Review & Security Analysis Agent** is an intelligent multi-agent platform designed to automatically analyze source code and provide AI-powered code review assistance.
-
-
-The system analyzes:
-
-- Python source code
-- Java source code
-
-
-and identifies:
-
-
-### 🔍 Code Quality Issues
-
+- Security vulnerabilities
 - Code smells
-- Poor coding practices
-- Maintainability problems
-- Design issues
+- Maintainability issues
+- OWASP violations
+- Best coding practices
 
+Our project automates the review process using **AI Agents**, **Static Analysis Tools**, and **Retrieval-Augmented Generation (RAG)**.
 
-### 🔒 Security Vulnerabilities
-
-- OWASP Top 10 vulnerabilities
-- Secure coding violations
-- Authentication weaknesses
-- Injection vulnerabilities
-
-
-### 🤖 AI-Powered Recommendations
-
-The platform provides:
-
-- Vulnerability explanations
-- Severity classification
-- Secure coding recommendations
-- Corrected code examples
-- Pull Request style summaries
-
-
-The project combines:
-
-
-- Artificial Intelligence
-- Large Language Models (LLMs)
-- Retrieval-Augmented Generation (RAG)
-- Static Code Analysis
-- OWASP Secure Coding Standards
-
-
-to help developers identify and fix issues earlier in the software development lifecycle.
-
-
+The system supports both **Python** and **Java** and generates professional review reports with explanations and secure coding recommendations.
 
 ---
 
 # 🎯 Problem Statement
 
+Manual code reviews have several challenges:
 
-Modern software applications are released frequently, making manual security reviews difficult and expensive.
+- Time-consuming
+- Human errors
+- Inconsistent reviews
+- Late vulnerability detection
+- Lack of secure coding guidance
 
-
-Developers may introduce:
-
-- SQL Injection vulnerabilities
-- Hardcoded credentials
-- Unsafe command execution
-- Weak authentication mechanisms
-- Poor coding practices
-
-
-These issues are often discovered late during:
-
-- Testing phase
-- Production deployment
-- Security audits
-
-
-The objective of this project is to build an AI-powered code review assistant that automatically analyzes source code and provides actionable feedback before deployment.
-
-
+This project solves these problems by automatically analyzing source code and providing AI-powered feedback before deployment.
 
 ---
 
-# 🎯 Project Objectives
-
+# 🎯 Objectives
 
 The main objectives of this project are:
 
+### ✅ Automated Code Review
 
-## 1. Automated Code Review
+Analyze Python and Java source code automatically.
 
-Develop an AI-based platform that automatically reviews source code for:
+### ✅ Security Analysis
 
-- Code quality issues
-- Security vulnerabilities
-- Best practice violations
+Detect OWASP Top 10 vulnerabilities.
 
+### ✅ AI Remediation
 
----
+Generate secure coding recommendations with corrected code examples.
 
+### ✅ PR Summary Generation
 
-## 2. Security Vulnerability Detection
+Produce a professional pull-request style review.
 
-Detect OWASP-based security issues including:
+### ✅ Conversational Assistant
 
-
-- SQL Injection
-- Command Injection
-- Hardcoded Secrets
-- Cross-Site Scripting
-- Insecure Deserialization
-- Weak Authentication
-- Broken Access Control
-
-
----
-
-
-## 3. AI-Based Remediation
-
-Generate:
-
-
-- Fix recommendations
-- Secure coding explanations
-- Corrected code examples
-
-
-based on industry security standards.
-
-
-
----
-
-
-## 4. RAG-Based Secure Coding Assistant
-
-
-Provide developers with an intelligent assistant that can:
-
-
-- Explain vulnerabilities
-- Answer security questions
-- Retrieve OWASP guidance
-- Provide secure alternatives
-
-
-using a secure coding knowledge base.
-
-
-
----
-
-
-## 5. Automated Review Reports
-
-
-Generate professional review reports containing:
-
-
-- Code analysis summary
-- Security findings
-- Severity classification
-- Recommended fixes
-- Code improvement suggestions
-
-
+Allow developers to ask follow-up questions using a RAG-powered chatbot grounded in secure coding documents.
 
 ---
 
 # ✨ Key Features
 
-
-# 📂 1. Code Submission Module
-
-
-The system supports multiple ways to submit source code:
-
-
-### File Upload
-
-Supported:
-
-- Python files (`.py`)
-- Java files (`.java`)
-
-
-
-### Direct Code Input
-
-Developers can paste source code directly into the application.
-
-
-
-Features:
-
-✅ Automatic language detection
-
-✅ File processing
-
-✅ Source code extraction
-
-✅ Review initiation
-
-
+- Upload Python (.py) and Java (.java) files
+- Paste source code directly
+- Automatic language detection
+- Syntax validation
+- Code quality analysis
+- Security vulnerability detection
+- AI-generated remediation
+- Pull Request summary
+- Severity scoring
+- Overall code health score
+- Analytics dashboard
+- PDF report generation
+- RAG-powered conversational assistant
 
 ---
 
+# 🏗️ System Architecture
 
-# 🌐 2. Automatic Language Detection
+                              👨‍💻 Developer
+                                    │
+             Paste Code / Upload Python (.py) or Java (.java)
+                                    │
+                                    ▼
+                     ┌─────────────────────────────┐
+                     │   Code Submission Module    │
+                     │  • Paste Code              │
+                     │  • File Upload             │
+                     └─────────────────────────────┘
+                                    │
+                                    ▼
+                     ┌─────────────────────────────┐
+                     │ Language Detection Module   │
+                     │ Syntax Validation Module    │
+                     └─────────────────────────────┘
+                                    │
+                                    ▼
+                 ┌─────────────────────────────────────────┐
+                 │      LangGraph Orchestrator Agent       │
+                 │ Coordinates Complete Review Pipeline    │
+                 └─────────────────────────────────────────┘
+                           │                    │
+          ┌────────────────┘                    └────────────────┐
+          ▼                                                      ▼
+┌──────────────────────────────┐                ┌──────────────────────────────┐
+│     Code Analysis Agent      │                │   Security Vulnerability     │
+│                              │                │          Agent               │
+├──────────────────────────────┤                ├──────────────────────────────┤
+│ Python Analysis              │                │ Python Security              │
+│ • Pylint                     │                │ • Bandit                     │
+│ • Radon                      │                │ • Custom OWASP Rules         │
+│ • Custom Quality Rules       │                │                              │
+│                              │                │ Java Security                │
+│ Java Analysis                │                │ • SpotBugs                   │
+│ • PMD                        │                │ • Java AST Analysis          │
+│ • Checkstyle                 │                │ • Custom OWASP Rules         │
+│ • Custom Quality Rules       │                │                              │
+└──────────────────────────────┘                └──────────────────────────────┘
+                           │                    │
+                           └──────────┬─────────┘
+                                      ▼
+                    ┌─────────────────────────────────┐
+                    │   Unified Findings Repository   │
+                    │ • Merge Quality Findings        │
+                    │ • Merge Security Findings       │
+                    │ • Assign Severity Levels        │
+                    └─────────────────────────────────┘
+                                      │
+                                      ▼
+                    ┌─────────────────────────────────┐
+                    │      Remediation Agent          │
+                    ├─────────────────────────────────┤
+                    │ • AI Fix Suggestions            │
+                    │ • Secure Coding Practices       │
+                    │ • Corrected Code Examples       │
+                    │ • Best Practice Explanations    │
+                    └─────────────────────────────────┘
+                                      │
+                                      ▼
+                    ┌─────────────────────────────────┐
+                    │        PR Summary Agent         │
+                    ├─────────────────────────────────┤
+                    │ • Executive Summary             │
+                    │ • Severity Breakdown            │
+                    │ • Code Health Score             │
+                    │ • Final Recommendation          │
+                    └─────────────────────────────────┘
+                                      │
+                                      ▼
+                    ┌─────────────────────────────────┐
+                    │    Streamlit Developer Portal   │
+                    ├─────────────────────────────────┤
+                    │ • Findings Dashboard            │
+                    │ • Analytics                     │
+                    │ • Health Score                  │
+                    │ • Severity Charts              │
+                    │ • PDF Report Download          │
+                    └─────────────────────────────────┘
+                                      │
+                                      │
+                     Developer asks follow-up questions
+                                      │
+                                      ▼
+                    ┌─────────────────────────────────┐
+                    │ Conversational Code Assistant   │
+                    ├─────────────────────────────────┤
+                    │ • Groq LLM                      │
+                    │ • LangChain                     │
+                    │ • RAG Pipeline                  │
+                    └─────────────────────────────────┘
+                                      │
+                                      ▼
+                    ┌─────────────────────────────────┐
+                    │ Secure Coding Knowledge Base    │
+                    ├─────────────────────────────────┤
+                    │ • OWASP Top 10                 │
+                    │ • Java Secure Coding Guide     │
+                    │ • Python Secure Coding Guide   │
+                    │ • Secure Coding Best Practices │
+                    │ • ChromaDB Vector Database     │
+                    └─────────────────────────────────┘
+```# 📂 Project Structure
 
-
-The application automatically identifies:
-
-
-Supported languages:
-
-
-🐍 Python
-
-☕
-
-Java
-
-
-
-The detected language determines the appropriate analysis pipeline.
-
-
+```
+AI-Code-Review-Agent/
+│
+├── app.py                         # Streamlit entry point
+├── requirements.txt               # Project dependencies
+├── README.md
+├── .env
+│
+├── agents/
+│   ├── orchestrator.py
+│   ├── code_analysis_agent.py
+│   ├── security_agent.py
+│   ├── remediation_agent.py
+│   ├── pr_summary_agent.py
+│   ├── conversational_assistant.py
+│   └── java_security_analyzer.py
+│
+├── modules/
+│   ├── submission.py
+│   ├── language_detector.py
+│   ├── syntax_validator.py
+│   ├── java_compiler.py
+│   ├── report_generator.py
+│   └── file_handler.py
+│
+├── tools/
+│   ├── pylint_runner.py
+│   ├── radon_runner.py
+│   ├── bandit_runner.py
+│   ├── pmd_runner.py
+│   ├── checkstyle_runner.py
+│   ├── spotbugs_runner.py
+│   ├── java_security_scanner.py
+│   ├── java_quality_analyzer.py
+│   └── python_security_scanner.py
+│
+├── rag/
+│   ├── loader.py
+│   ├── splitter.py
+│   ├── embedding.py
+│   ├── vector_store.py
+│   ├── build_knowledgebase.py
+│   └── groq_model.py
+│
+├── ui/
+│   ├── review_page.py
+│   ├── assistant.py
+│   ├── analytics.py
+│   ├── dashboard.py
+│   ├── reports.py
+│   ├── history.py
+│   ├── sidebar.py
+│   └── settings.py
+│
+├── knowledge_base/
+│
+├── generated_reports/
+│
+└── chroma_db/
+```
 
 ---
 
-# ✅ 3. Syntax Validation
-
-
-Before security analysis, the system validates source code syntax.
-
-
-
-## Python Syntax Validation
-
-
-Uses:
-
-- Python AST Parser
-
-
-Provides:
-
-- Syntax checking
-- Error location
-- Validation messages
-
-
-
----
-
-
-## Java Syntax Validation
-
-
-Uses:
-
-- Java Parser (`javalang`)
-- Java compilation validation
-
-
-Provides:
-
-- Syntax checking
-- Parsing errors
-- Compilation feedback
-
-
-
----
-
-
-# 🔍 4. Code Quality Analysis
-
-
-The Code Analysis Agent identifies:
-
-
-- Unused variables
-- Unused imports
-- Long methods
-- Long lines
-- Magic numbers
-- Duplicate imports
-- Deep nesting
-- Poor exception handling
-- Console logging
-- Infinite loops
-- Maintainability issues
-
-
-
----
-
-# 🔒 5. Security Vulnerability Detection
-
-
-The Security Analysis Agent detects OWASP-based vulnerabilities:
-
-
-| Vulnerability | Severity |
-|---|---|
-| SQL Injection | High |
-| Command Injection | Critical |
-| Hardcoded Secrets | High |
-| Insecure Deserialization | High |
-| Weak Authentication | High |
-| Cross-Site Scripting (XSS) | Medium |
-| Path Traversal | High |
-| Weak Cryptography | Medium |
-| Weak Random Generation | Medium |
-
-
-
-Each vulnerability report contains:
-
-
-- Vulnerability name
-- Severity level
-- Risk explanation
-- Recommended fix
-- Secure coding practice
-
-
-
----
-
-# 🔧 6. AI Remediation Suggestions
-
-
-The Remediation Agent generates:
-
-
-- Security fixes
-- Refactoring suggestions
-- Secure coding alternatives
-- Corrected code examples
-
-
-
-Example:
-
-
-Before:
-
-
-```java
-statement.executeQuery(
-"SELECT * FROM users WHERE id=" + id
-);
 # 🤖 Multi-Agent Architecture
 
-
-The AI Code Review & Security Analysis Agent follows a modular multi-agent architecture where each agent performs a specific responsibility in the software review lifecycle.
-
-
-The system consists of:
-
-
-1. Code Analysis Agent
-2. Security Vulnerability Agent
-3. Remediation Agent
-4. PR Summary Agent
-5. Conversational Code Assistant
-6. Orchestrator Agent
-
-
+The system follows a **Multi-Agent Architecture**, where each AI agent performs one specific responsibility.
 
 ---
 
-# 🧠 Agent Responsibilities
+## 1️⃣ LangGraph Orchestrator Agent
 
+**Responsibility**
 
-# 1. 🔍 Code Analysis Agent
+Acts as the central controller.
 
+### Tasks
 
-## Purpose
-
-The Code Analysis Agent analyzes source code quality and identifies maintainability issues, code smells, and programming best-practice violations.
-
-
-
-## Responsibilities
-
-
-- Analyze code structure
-- Detect poor coding practices
-- Identify maintainability issues
-- Find code smells
-- Generate quality recommendations
-
-
-
-## Detects
-
-
-### Code Smells
-
-- Long methods
-- Long lines
-- Deep nesting
-- Duplicate code patterns
-- Too many parameters
-
-
-### Maintainability Issues
-
-- Unused variables
-- Unused imports
-- Global variables
-- Magic numbers
-- Poor exception handling
-- Empty exception blocks
-
-
-### Programming Issues
-
-- Infinite loops
-- Console logging
-- Generic exception handling
-- TODO/FIXME comments
-
-
-
-## Output Example
-
-
-```json
-{
- "issue": "Unused Variable",
- "severity": "Medium",
- "description": "Unused variables reduce code readability",
- "recommendation": "Remove unused variables"
-}
-# 🔒 Security Testing & Validation
-
-
-The AI Code Review & Security Analysis Agent was tested using intentionally vulnerable Python and Java source code samples.
-
-
-The purpose of testing was to validate:
-
-
-- Vulnerability detection accuracy
-- Severity classification
-- Security recommendations
-- AI remediation quality
-- OWASP compliance
-
-
-Testing was performed against common security vulnerabilities from the OWASP Top 10.
-
-
+- Receives validated source code
+- Starts analysis workflow
+- Coordinates all agents
+- Collects results
+- Passes outputs to next agent
 
 ---
 
-# 📊 Security Testing Results
+## 2️⃣ Code Analysis Agent
 
+This agent focuses on **code quality**.
 
-| Vulnerability | Status | Severity |
-|---|---|---|
-| SQL Injection | ✅ Tested | High |
-| Hardcoded Secrets | ✅ Tested | High |
-| Command Injection | ✅ Tested | Critical |
-| Insecure Deserialization | ✅ Tested | High |
-| Weak Authentication | ✅ Tested | High |
-| Cross-Site Scripting (XSS) | ⚠️ Validation Pending | Medium |
-| Broken Access Control | ⚠️ Validation Pending | High |
+### Detects
 
+- Unused Variables
+- Unused Imports
+- Duplicate Imports
+- Long Methods
+- Long Lines
+- Magic Numbers
+- Duplicate Code
+- Dead Code
+- Empty Catch Blocks
+- Deep Nesting
+- Console Logging
+- Poor Exception Handling
+- Complexity Issues
 
+### Tools Used
 
----
-
-# 🧪 Vulnerability Test Cases
-
-
-The following test cases were created using vulnerable source code examples.
-
-
-
----
-
-# 1. SQL Injection Test
-
-
-## Objective
-
-
-Verify whether the Security Agent detects unsafe SQL query construction.
-
-
-
-## Vulnerable Code
-
-
-```java
-String query =
-"SELECT * FROM users WHERE id="
-+ userInput;
-
-
-Statement stmt =
-connection.createStatement();
-
-ResultSet rs =
-stmt.executeQuery(query);
-# 🛠 Technology Stack
-
-
-The AI Code Review & Security Analysis Agent is built using modern Artificial Intelligence, software engineering, and security technologies.
-
-
+- PMD
+- Checkstyle
+- Pylint
+- Radon
+- Custom Rules
 
 ---
 
-# 💻 Programming Languages
+## 3️⃣ Security Agent
 
+Responsible for detecting security vulnerabilities.
 
-## Python
+### Detects
 
+- SQL Injection
+- Command Injection
+- Hardcoded Secrets
+- Weak Authentication
+- Broken Access Control
+- Path Traversal
+- XXE Injection
+- Insecure Deserialization
+- Weak Random Numbers
+- Weak Cryptography
+- Cross Site Scripting (XSS)
 
-Used for:
+### Tools Used
 
-
-- AI agent implementation
-- Backend processing
-- RAG pipeline
-- Security analysis
-- Streamlit application
-
-
-
-## Java
-
-
-Supported for:
-
-
-- Source code analysis
-- Syntax validation
-- Security vulnerability detection
-- Code quality analysis
-
-
+- Bandit
+- SpotBugs
+- Custom Security Scanner
+- OWASP Rules
 
 ---
 
-# 🎨 Frontend Technology
+## 4️⃣ Remediation Agent
 
+After all findings are collected, the Remediation Agent generates secure fixes.
 
-## Streamlit
+### Generates
 
+- Secure Coding Recommendations
+- Corrected Code Examples
+- Best Practices
+- OWASP Guidance
+- Refactoring Suggestions
 
-Streamlit is used to build the interactive user interface.
+Powered by:
 
-
-
-Features:
-
-
-- Source code upload
-- Code editor
-- Analysis dashboard
-- Security reports
-- PDF download
-- AI assistant interface
-
-
+- Groq LLM
 
 ---
 
-# ⚙ Backend Technology
+## 5️⃣ PR Summary Agent
 
+Creates a professional Pull Request Review.
 
-## Python Backend
+Includes
 
+- Executive Summary
+- Code Health Score
+- Severity Breakdown
+- Priority Fixes
+- Final Recommendation
 
-Responsible for:
+Powered by
 
-
-- File processing
-- Language detection
-- Syntax validation
-- Agent execution
-- Report generation
-- RAG integration
-
-
+- Groq LLM
 
 ---
 
-# 🤖 Artificial Intelligence Technologies
+## 6️⃣ Conversational Code Assistant
 
+Allows developers to ask follow-up questions after code review.
 
-## LangChain
+Examples
 
+- Why is SQL Injection dangerous?
+- Explain XXE Attack.
+- Show secure Java code.
+- Explain OWASP recommendations.
 
-Used for:
+This assistant uses
 
-
-- LLM integration
-- Prompt management
-- RAG workflow
-- Document retrieval
-
-
-
----
-
-## LangGraph
-
-
-Used for:
-
-
-- Multi-agent workflow management
-- Agent communication
-- State management
-- Sequential execution
-
-
+- LangChain
+- Groq LLM
+- ChromaDB
+- RAG Knowledge Base
 
 ---
 
-## Groq LLM
+# 📚 Secure Coding Knowledge Base (RAG)
 
+Instead of answering from memory, the assistant retrieves information from an indexed secure coding knowledge base.
 
-Used for:
+Knowledge Sources
 
+- OWASP Top 10
+- Java Secure Coding Guidelines
+- Python Secure Coding Guidelines
+- Secure Coding Best Practices
+- Internal Documentation
 
-- AI reasoning
-- Security explanation generation
-- Code remediation
-- Pull request summaries
+Pipeline
 
+```
+Documents
 
+      │
+
+      ▼
+
+Document Loader
+
+      │
+
+      ▼
+
+Text Splitter
+
+      │
+
+      ▼
+
+Embeddings
+
+(sentence-transformers)
+
+      │
+
+      ▼
+
+ChromaDB Vector Store
+
+      │
+
+      ▼
+
+Retriever
+
+      │
+
+      ▼
+
+Groq LLM
+
+      │
+
+      ▼
+
+Final Answer
+```
 
 ---
 
-# 🧠 Embedding Model
+# 💻 Technology Stack
 
-
-## HuggingFace Sentence Transformers
-
-
-Model:
-
-
-```text
-sentence-transformers/all-MiniLM-L6-v2
-# 🚀 Deployment Guide
-
-
-The AI Code Review & Security Analysis Agent can be deployed locally or on cloud platforms.
-
-
+| Category | Technology |
+|------------|----------------|
+| Programming | Python, Java |
+| Frontend | Streamlit |
+| AI Framework | LangChain |
+| Multi-Agent | LangGraph |
+| LLM | Groq |
+| Vector Database | ChromaDB |
+| Embeddings | sentence-transformers |
+| Python Security | Bandit |
+| Python Quality | Pylint, Radon |
+| Java Quality | PMD, Checkstyle |
+| Java Security | SpotBugs |
+| Java Parser | javalang |
+| Report Generation | ReportLab |
+| Charts | Plotly, Pandas |
 
 ---
 
-# 🌐 Streamlit Cloud Deployment
+# ⚙️ Workflow
 
+```
+Developer
 
-The application supports deployment using Streamlit Cloud.
+     │
 
+Paste Code / Upload File
 
+     │
 
-## Deployment Steps
+Language Detection
 
+     │
 
-### Step 1
+Syntax Validation
 
-Push the project repository to GitHub.
+     │
 
+LangGraph Orchestrator
 
+     │
 
-### Step 2
+Code Analysis Agent
 
-Open Streamlit Cloud:
+     │
 
+Security Agent
 
+     │
 
-```text
-https://streamlit.io/cloud
+Unified Findings
+
+     │
+
+Remediation Agent
+
+     │
+
+PR Summary Agent
+
+     │
+
+Developer Dashboard
+
+     │
+
+PDF Report
+
+     │
+
+Conversational AI Assistant
+```
+
+---
+
+# 📊 Severity Levels
+
+| Severity | Meaning |
+|-----------|----------|
+| 🔴 Critical | Immediate security risk |
+| 🟠 High | Serious vulnerability |
+| 🟡 Medium | Moderate issue |
+| 🔵 Low | Minor issue |
+| 🟢 Info | Recommendation |
+
+---
+
+# 📄 Generated Report Includes
+
+The generated PDF report contains:
+
+- Executive Summary
+- Code Health Score
+- Severity Breakdown
+- Quality Issues
+- Security Findings
+- AI Remediation Suggestions
+- Corrected Code Examples
+- Pull Request Summary
+- Overall Recommendation
+# 🚀 Installation
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/AI-Code-Review-Agent.git
+cd AI-Code-Review-Agent
+```
+
+---
+
+## 2. Create Virtual Environment
+
+### Windows
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+---
+
+## 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 4. Configure Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
+GROQ_API_KEY=your_groq_api_key
+```
+
+---
+
+## 5. Build the RAG Knowledge Base
+
+```bash
+python rag/build_knowledgebase.py
+```
+
+This indexes:
+
+- OWASP Top 10
+- Java Secure Coding Guidelines
+- Python Secure Coding Guidelines
+- Secure Coding Best Practices
+
+into the ChromaDB vector database.
+
+---
+
+## 6. Run the Application
+
+```bash
+streamlit run app.py
+```
+
+The application opens in your browser.
+
+---
+
+# 💻 Application Modules
+
+## 1. Code Submission Module
+
+Supports:
+
+- Paste Python code
+- Paste Java code
+- Upload `.py`
+- Upload `.java`
+
+---
+
+## 2. Language Detection Module
+
+Automatically detects:
+
+- Python
+- Java
+
+---
+
+## 3. Syntax Validation Module
+
+Checks whether submitted code is syntactically correct before analysis.
+
+---
+
+## 4. Multi-Agent Analysis Module
+
+Performs:
+
+- Code Quality Review
+- Security Analysis
+- Remediation
+- PR Summary Generation
+
+---
+
+## 5. Findings Dashboard
+
+Displays:
+
+- Severity Score
+- Health Score
+- Security Findings
+- Quality Findings
+- AI Recommendations
+
+---
+
+## 6. PDF Report Module
+
+Generates downloadable reports containing:
+
+- Executive Summary
+- Security Findings
+- Code Quality Findings
+- Remediation
+- PR Summary
+- Overall Recommendation
+
+---
+
+## 7. Conversational Assistant
+
+Developers can ask:
+
+- Explain SQL Injection
+- Explain XXE
+- Why is this vulnerability dangerous?
+- Show secure Java code
+- Show secure Python example
+
+The assistant answers using the RAG Knowledge Base.
+
+---
+
+# 🧪 Testing & Validation
+
+The application was tested using intentionally vulnerable Python and Java programs.
+
+## Security Test Cases
+
+| Test Case | Status |
+|------------|---------|
+| SQL Injection | ✅ Pass |
+| Command Injection | ✅ Pass |
+| Hardcoded Secrets | ✅ Pass |
+| Weak Authentication | ✅ Pass |
+| Weak Cryptography | ✅ Pass |
+| XXE Injection | ✅ Pass |
+| Path Traversal | ✅ Pass |
+| Insecure Deserialization | ✅ Pass |
+| Weak Random Generator | ✅ Pass |
+
+---
+
+## Code Quality Test Cases
+
+| Test Case | Status |
+|------------|---------|
+| Unused Variable | ✅ Pass |
+| Unused Import | ✅ Pass |
+| Duplicate Import | ✅ Pass |
+| Magic Number | ✅ Pass |
+| Deep Nesting | ✅ Pass |
+| Empty Catch Block | ✅ Pass |
+| Console Logging | ✅ Pass |
+| Duplicate Code | ✅ Pass |
+| Unnecessary Object Creation | ✅ Pass |
+| Primitive Wrapper Instantiation | ✅ Pass |
+| Dead Code | ✅ Pass |
+| Poor Exception Handling | ✅ Pass |
+
+---
+
+# 📊 Application Output
+
+After analysis, the application provides:
+
+- Language Detection
+- Syntax Validation
+- Code Health Score
+- Severity Breakdown
+- Security Findings
+- Code Quality Findings
+- AI Remediation Suggestions
+- Pull Request Summary
+- Downloadable PDF Report
+
+---
+
+# 🌟 Advantages
+
+- Faster than manual code review
+- Detects security vulnerabilities early
+- Improves code quality
+- Supports Python and Java
+- AI-powered remediation
+- Professional PR-style review
+- Interactive developer dashboard
+- RAG-powered secure coding assistant
+- Exportable PDF reports
+- Easy-to-use web interface
+
+---
+
+# 🚀 Future Enhancements
+
+Future improvements include:
+
+- Support for C, C++, JavaScript, and Go
+- GitHub Pull Request integration
+- VS Code extension
+- CI/CD pipeline integration
+- Docker deployment
+- SonarQube integration
+- Email notification support
+- Team collaboration dashboard
+- Auto-fix suggestions
+- Cloud deployment support
+
+---
+
+# 📈 Project Outcomes
+
+This project successfully achieves the following outcomes:
+
+- Automated code review using AI agents
+- Detection of code quality issues
+- Detection of OWASP security vulnerabilities
+- AI-generated remediation suggestions
+- Professional pull request summaries
+- Secure coding guidance using RAG
+- Interactive developer dashboard
+- Exportable PDF reports
+
+---
+
+# 📚 References
+
+- OWASP Top 10
+- OWASP Secure Coding Practices
+- Python Security Guidelines
+- Java Secure Coding Guidelines
+- PMD Documentation
+- Checkstyle Documentation
+- SpotBugs Documentation
+- Bandit Documentation
+- LangChain Documentation
+- LangGraph Documentation
+- Groq API Documentation
+- ChromaDB Documentation
+- Streamlit Documentation
+
+---
+
+# 👨‍💻 Developed By
+
+**AI Code Review & Security Analysis Agent**
+
+B.Tech CSE Major Project
+
+Developed using:
+
+- Python
+- Java
+- Streamlit
+- LangGraph
+- LangChain
+- Groq LLM
+- ChromaDB
+- Bandit
+- PMD
+- Checkstyle
+- SpotBugs
+
+---
+
+# 📄 License
+
+This project is developed for educational and research purposes.
+
+MIT License.
+
+---
+
+# ⭐ Thank You
+
+If you found this project useful, please consider giving it a ⭐ on GitHub.
+
+**Happy Secure Coding! 🔒💻**
