@@ -4,6 +4,27 @@ import subprocess
 import tempfile
 
 
+CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "config",
+    "pmd_priority_map.json"
+)
+
+_priority_map = None
+
+
+def _load_priority_map():
+
+    global _priority_map
+
+    if _priority_map is None:
+
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            _priority_map = json.load(f)
+
+    return _priority_map
+
+
 class PMDRunner:
     """
     Executes PMD for Java static code analysis.
@@ -73,18 +94,18 @@ class PMDRunner:
 
                 for issue in file_data.get("violations", []):
 
-                    priority = int(
+                    priority = str(
                         issue.get("priority", 5)
                     )
 
-                    if priority == 1:
-                        severity = "CRITICAL"
-                    elif priority == 2:
-                        severity = "HIGH"
-                    elif priority == 3:
-                        severity = "MEDIUM"
-                    else:
-                        severity = "LOW"
+                    severity = _load_priority_map().get(priority, "LOW")
+
+                    line = (
+                        issue.get("beginLine")
+                        or issue.get("beginline")
+                        or issue.get("line")
+                        or 0
+                    )
 
                     findings.append(
                         {
@@ -92,7 +113,7 @@ class PMDRunner:
                             "tool": "PMD",
                             "type": issue.get("rule", "PMD"),
                             "severity": severity,
-                            "line": issue.get("beginLine", 0),
+                            "line": line,
                             "description": issue.get("description", ""),
                             "recommendation": (
                                 f"Follow PMD rule: "

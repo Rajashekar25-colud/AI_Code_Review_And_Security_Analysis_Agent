@@ -1,0 +1,4 @@
+{
+  "unused_local_variable": "MEDIUM",
+  "empty_catch_block": "MEDIUM"
+}

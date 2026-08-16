@@ -1,6 +1,7 @@
 from langchain_core.messages import HumanMessage
 
 from rag.groq_model import get_groq_model
+from modules.severity import format_findings_for_prompt
 
 
 class PRSummaryAgent:
@@ -14,8 +15,11 @@ class PRSummaryAgent:
 
     def __init__(self):
 
+        # Prompt asks for up to 300 words across 7 sections -
+        # give it a safe margin above the old 512-token default.
         self.llm = get_groq_model(
-            temperature=0.2
+            temperature=0.2,
+            max_tokens=800
         )
 
 
@@ -83,11 +87,11 @@ class PRSummaryAgent:
         findings
     ):
 
-        # Prevent huge prompts
-        findings_text = str(findings)
-
-        if len(findings_text) > 4000:
-            findings_text = findings_text[:4000]
+        # Explicit "[SEVERITY] Title - Description" format, sorted
+        # CRITICAL first - far less ambiguous for the LLM to parse
+        # than a raw Python dict repr, and less likely to cause it
+        # to invent or recalculate a severity.
+        findings_text = format_findings_for_prompt(findings)
 
 
         return f"""
@@ -97,7 +101,11 @@ Programming Language:
 {language}
 
 
-Static Analysis Findings:
+Static Analysis Findings (already severity-classified - the
+bracketed [SEVERITY] tag on each line is authoritative; use these
+exact severity labels for your Severity Breakdown section, do not
+recalculate or invent different ones):
+
 {findings_text}
 
 
@@ -119,7 +127,9 @@ Describe the current quality and security status.
 
 3. Severity Breakdown
 
-Mention only severity counts present in findings.
+Count findings per severity using ONLY the four levels CRITICAL,
+HIGH, MEDIUM, LOW exactly as tagged above. Do not invent any other
+severity category or sub-classification.
 
 
 4. Important Findings
@@ -146,7 +156,7 @@ Rules:
 
 - Use ONLY provided findings.
 - Do NOT invent vulnerabilities.
-- Do NOT invent severity numbers.
+- Do NOT invent severity numbers or severity categories.
 - Do NOT include corrected code.
 - Do NOT include OWASP explanations.
 - Do NOT include remediation steps.

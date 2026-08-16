@@ -1,6 +1,9 @@
 import os
 import streamlit as st
 
+from database.repository import get_history, delete_review
+from database.repository import get_chat_history, delete_chat_history
+
 
 def render_settings_page():
     """
@@ -9,12 +12,17 @@ def render_settings_page():
 
     st.title("⚙ Settings")
 
+    user = st.session_state.get("user")
+
     st.subheader("Application")
 
-    st.write("**Project:** AI Code Review & Security Analysis Agent")
+    st.write("**Project:** Smart Code Inspection Platform with Vulnerability Detection System")
     st.write("**Version:** 1.0")
     st.write("**Framework:** Streamlit")
     st.write("**Workflow:** LangGraph")
+
+    if user:
+        st.write(f"**Logged in as:** {user['email']}")
 
     st.divider()
 
@@ -23,11 +31,8 @@ def render_settings_page():
     groq_key = os.getenv("GROQ_API_KEY")
 
     if groq_key:
-
         st.success("Groq API Key Configured")
-
     else:
-
         st.error("Groq API Key Not Found")
 
     st.divider()
@@ -35,19 +40,13 @@ def render_settings_page():
     st.subheader("Knowledge Base")
 
     if os.path.exists("chroma_db"):
-
         st.success("Chroma Vector Database Available")
-
     else:
-
         st.warning("Knowledge Base Not Built")
 
     if os.path.exists("knowledge_base"):
-
         st.success("Knowledge Base Documents Found")
-
     else:
-
         st.warning("Knowledge Base Folder Missing")
 
     st.divider()
@@ -77,11 +76,8 @@ def render_settings_page():
     for tool, available in tools.items():
 
         if available:
-
             st.success(f"{tool} ✓")
-
         else:
-
             st.warning(f"{tool} Not Found")
 
     st.divider()
@@ -89,25 +85,49 @@ def render_settings_page():
     st.subheader("Environment")
 
     st.write(f"**Current Working Directory:** `{os.getcwd()}`")
-
     st.write(f"**Python Version:** `{os.sys.version.split()[0]}`")
 
     st.divider()
 
-    if st.button(
-        "Clear Chat History",
-        width="stretch"
-    ):
+    st.subheader("Data")
 
-        st.session_state["chat_history"] = []
+    if not user:
 
-        st.success("Chat history cleared.")
+        st.info("Log in to manage your saved reviews and chat history.")
+        return
 
-    if st.button(
-        "Clear Review History",
-        width="stretch"
-    ):
+    reviews = get_history(user["id"])
 
-        st.session_state["history"] = []
+    st.write(f"**Saved Reviews:** {len(reviews)}")
 
-        st.success("Review history cleared.")
+    total_chat_messages = 0
+
+    for review in reviews:
+        total_chat_messages += len(get_chat_history(review["id"]))
+
+    st.write(f"**Saved Chat Messages:** {total_chat_messages}")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        if st.button("Clear All Chat History", width="stretch"):
+
+            for review in reviews:
+                delete_chat_history(review["id"])
+
+            st.session_state.chat_threads = {}
+            st.success("All chat history cleared from the database.")
+            st.rerun()
+
+    with col2:
+
+        if st.button("Clear All Review History", width="stretch"):
+
+            for review in reviews:
+                delete_review(review["id"])
+
+            st.session_state.review_result = None
+            st.session_state.active_review_id = None
+            st.success("All reviews deleted from the database.")
+            st.rerun()

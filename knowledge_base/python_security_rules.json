@@ -5,7 +5,7 @@
       "id": "PY-SQL-001",
       "name": "SQL Injection",
       "category": "injection",
-      "severity": "HIGH",
+      "severity": "CRITICAL",
       "patterns": {
         "sink": [
           "execute",
@@ -96,7 +96,7 @@
       "id": "PY-CMD-001",
       "name": "Command Injection",
       "category": "injection",
-      "severity": "HIGH",
+      "severity": "CRITICAL",
       "patterns": {
         "sink": [
           "os.system",
@@ -133,7 +133,7 @@
       "id": "PY-PICKLE-001",
       "name": "Unsafe Pickle Deserialization",
       "category": "deserialization",
-      "severity": "HIGH",
+      "severity": "CRITICAL",
       "patterns": {
         "sink": [
           "pickle.load",
@@ -151,7 +151,7 @@
       "id": "PY-CRYPTO-001",
       "name": "Weak Cryptography",
       "category": "cryptography",
-      "severity": "MEDIUM",
+      "severity": "HIGH",
       "patterns": {
         "sink": [
           "md5",
@@ -270,6 +270,44 @@
       "Dynamic templates may execute unsafe expressions.",
       "recommendation":
       "Avoid rendering user-controlled templates."
+    },
+
+
+    {
+      "id": "PY-AUTH-001",
+      "name": "Insecure Authentication",
+      "category": "authentication",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "httpbasicauth",
+          "basic_auth",
+          "httpbasicauthhandler"
+        ]
+      },
+      "description":
+      "HTTP Basic Authentication transmits credentials in an easily decodable form and should only be used over HTTPS with additional protections.",
+      "recommendation":
+      "Use token-based authentication (OAuth2, JWT, or session tokens) over HTTPS instead of HTTP Basic Auth."
+    },
+
+
+    {
+      "id": "PY-ACCESS-001",
+      "name": "Broken Access Control",
+      "category": "access_control",
+      "severity": "HIGH",
+      "patterns": {
+        "sink": [
+          "os.chmod",
+          "chmod",
+          "os.fchmod"
+        ]
+      },
+      "description":
+      "Setting overly permissive file or directory permissions can allow unauthorized users to read, modify, or execute protected resources.",
+      "recommendation":
+      "Apply the principle of least privilege - grant only the minimum file permissions required for the application to function."
     }
 
   ]

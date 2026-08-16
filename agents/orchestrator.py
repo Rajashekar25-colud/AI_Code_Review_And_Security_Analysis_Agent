@@ -9,6 +9,10 @@ from agents.remediation_agent import RemediationAgent
 from agents.pr_summary_agent import PRSummaryAgent
 
 from modules.java_compiler import JavaCompiler
+from modules.severity import normalize_findings
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ReviewState(TypedDict):
@@ -100,17 +104,14 @@ class Orchestrator:
                 if compile_result.get("success"):
                     class_directory = compile_result.get("class_dir")
                 else:
-                    print(
-                        "[INFO] Java compilation skipped:",
+                    logger.info(
+                        "Java compilation skipped: %s",
                         compile_result.get("message")
                     )
 
             except Exception as e:
 
-                print(
-                    "[INFO] Java compilation unavailable:",
-                    str(e)
-                )
+                logger.info("Java compilation unavailable: %s", str(e))
 
                 class_directory = None
 
@@ -146,27 +147,28 @@ class Orchestrator:
 
     ##################################################
     # Merge Findings
+    #
+    # Each tool runner tags its own "agent" field on every
+    # finding it produces. Some producers (e.g. the Groq-based
+    # Java security analyzer) don't set one, so we default it
+    # here based on which pipeline stage the finding came from -
+    # setdefault() never overwrites a value a tool already set.
     ##################################################
 
     def merge_findings(self, state):
 
-        findings = []
+        code_findings = state.get("code_findings", [])
+        security_findings = state.get("security_findings", [])
 
-        findings.extend(
-            state.get(
-                "code_findings",
-                []
-            )
-        )
+        for finding in code_findings:
+            finding.setdefault("agent", "Code Analysis Agent")
 
-        findings.extend(
-            state.get(
-                "security_findings",
-                []
-            )
-        )
+        for finding in security_findings:
+            finding.setdefault("agent", "Security Vulnerability Agent")
 
-        state["findings"] = findings
+        findings = code_findings + security_findings
+
+        state["findings"] = normalize_findings(findings)
 
         return state
 

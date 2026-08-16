@@ -1,6 +1,7 @@
 from langchain_core.messages import HumanMessage
 
 from rag.groq_model import get_groq_model
+from modules.severity import format_findings_for_prompt
 
 
 class RemediationAgent:
@@ -13,8 +14,12 @@ class RemediationAgent:
 
     def __init__(self):
 
+        # Prompt asks for up to 700 words plus code examples -
+        # 512 tokens (the old shared default) wasn't enough and
+        # was truncating reports mid-example.
         self.llm = get_groq_model(
-            temperature=0.2
+            temperature=0.2,
+            max_tokens=1536
         )
 
 
@@ -76,12 +81,11 @@ class RemediationAgent:
         language=None
     ):
 
-        findings_text = str(findings)
-
-
-        # Limit input size to avoid Groq 413 error
-        if len(findings_text) > 5000:
-            findings_text = findings_text[:5000]
+        # Explicit "[SEVERITY] Title - Description" format, sorted
+        # CRITICAL first - far less ambiguous for the LLM to parse
+        # than a raw Python dict repr, and less likely to cause it
+        # to invent or recalculate a severity.
+        findings_text = format_findings_for_prompt(findings)
 
 
         return f"""
@@ -93,7 +97,9 @@ Programming Language:
 {language}
 
 
-Security Findings:
+Security Findings (already severity-classified - copy each
+finding's [SEVERITY] EXACTLY as shown, do not recalculate,
+reinterpret, or invent a different severity for any finding):
 
 {findings_text}
 
@@ -104,7 +110,7 @@ For each finding include:
 
 2. Risk Explanation
 
-3. Severity
+3. Severity (copy exactly from the bracketed tag above)
 
 4. Recommended Fix
 

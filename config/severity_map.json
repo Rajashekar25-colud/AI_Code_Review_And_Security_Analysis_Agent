@@ -1,0 +1,38 @@
+{
+  "sql injection": "CRITICAL",
+  "command injection": "CRITICAL",
+  "remote code execution": "CRITICAL",
+  "insecure deserialization": "CRITICAL",
+  "authentication bypass": "CRITICAL",
+
+  "broken access control": "HIGH",
+  "ssrf": "HIGH",
+  "server side request forgery": "HIGH",
+  "server-side request forgery": "HIGH",
+  "hardcoded secret": "HIGH",
+  "hardcoded secrets": "HIGH",
+  "hardcoded password": "HIGH",
+  "hardcoded credential": "HIGH",
+  "weak cryptography": "HIGH",
+  "weak crypto": "HIGH",
+  "cross site scripting": "HIGH",
+  "cross-site scripting": "HIGH",
+  "xss": "HIGH",
+  "path traversal": "HIGH",
+  "weak authentication": "HIGH",
+  "insecure authentication": "HIGH",
+  "insecure random": "MEDIUM",
+
+  "csrf": "MEDIUM",
+  "cross site request forgery": "MEDIUM",
+  "cross-site request forgery": "MEDIUM",
+  "information disclosure": "MEDIUM",
+  "reliance on default charset": "MEDIUM",
+
+  "logging issue": "LOW",
+  "style issue": "LOW",
+  "naming issue": "LOW",
+  "unused": "LOW",
+  "missing docstring": "LOW",
+  "missing newline": "LOW"
+}

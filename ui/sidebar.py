@@ -1,6 +1,9 @@
 import os
 import streamlit as st
 
+from database.repository import get_history
+from database.auth import delete_session
+
 
 def render_sidebar():
     """
@@ -20,52 +23,88 @@ def render_sidebar():
             width="stretch"
         )
 
-    st.sidebar.title("🤖 AI Code Review Agent")
+    st.sidebar.title("🤖 Smart Code Inspection Platform")
 
     st.sidebar.caption(
-        "Multi-Agent Code Quality & Security Analysis"
+        "Vulnerability Detection System"
     )
 
     st.sidebar.divider()
 
+    nav_options = [
+        "📝 New Review",
+        "📄 Reports",
+        "🕘 History",
+        "⚙ Settings"
+    ]
+
+    # ------------------------------------------------------
+    # Allow other pages (e.g. History's "Restore" button) to
+    # force the sidebar to jump to a specific page. They do
+    # this by setting st.session_state.nav_override before
+    # calling st.rerun() - we apply it here, once, before the
+    # radio widget is created.
+    # ------------------------------------------------------
+
+    if "nav_override" in st.session_state:
+
+        st.session_state["nav_radio"] = st.session_state.pop("nav_override")
+
     page = st.sidebar.radio(
         "Navigation",
-        [
-            "📝 New Review",
-            "📊 Analytics",
-            "🤖 AI Assistant",
-            "📄 Reports",
-            "🕘 History",
-            "⚙ Settings"
-        ]
+        nav_options,
+        key="nav_radio"
     )
+
+    user = st.session_state.get("user")
+
+    if user:
+
+        st.sidebar.divider()
+        st.sidebar.subheader("Recent Reviews")
+
+        reviews = get_history(user["id"])[:5]
+
+        if reviews:
+
+            for review in reviews:
+
+                filename = review.get("filename") or "Untitled"
+                score = review.get("overall_score", 0)
+
+                st.sidebar.caption(f"{filename} — {score}")
+
+        else:
+            st.sidebar.caption("No reviews yet.")
 
     st.sidebar.divider()
 
     st.sidebar.subheader("Supported Languages")
 
     st.sidebar.success("🐍 Python")
-
     st.sidebar.success("☕ Java")
 
     st.sidebar.divider()
 
-    st.sidebar.subheader("System Status")
+    if user:
+        st.sidebar.caption(f"👤 {user.get('name') or user['email']}")
 
-    st.sidebar.success("✅ Groq API Connected")
+        if st.sidebar.button("Logout", width="stretch"):
 
-    st.sidebar.success("✅ LangGraph Workflow Ready")
+            token = st.query_params.get("session")
 
-    st.sidebar.success("✅ RAG Knowledge Base Loaded")
+            if token:
+                delete_session(token)
 
-    st.sidebar.success("✅ Chroma Vector Database Ready")
+            st.query_params.clear()
 
-    st.sidebar.success("✅ AI Agents Online")
+            st.session_state.user = None
+            st.session_state.review_result = None
+            st.rerun()
 
     st.sidebar.divider()
 
-    st.sidebar.caption("AI Code Review & Security Analysis Agent")
-
+    st.sidebar.caption("Smart Code Inspection Platform")
     st.sidebar.caption("Version 1.0")
 
     return page

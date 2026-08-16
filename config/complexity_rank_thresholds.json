@@ -1,0 +1,8 @@
+[
+  { "max_complexity": 5,  "rank": "A" },
+  { "max_complexity": 10, "rank": "B" },
+  { "max_complexity": 20, "rank": "C" },
+  { "max_complexity": 30, "rank": "D" },
+  { "max_complexity": 40, "rank": "E" },
+  { "max_complexity": 999999, "rank": "F" }
+]

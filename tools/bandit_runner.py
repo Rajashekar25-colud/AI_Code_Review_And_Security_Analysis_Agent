@@ -48,7 +48,7 @@ class BanditRunner:
 
                 findings.append(
                     {
-                        "agent": "Security Agent",
+                        "agent": "Security Vulnerability Agent",
                         "tool": "Bandit",
                         "test_id": issue.get("test_id"),
                         "test_name": issue.get("test_name"),
@@ -66,7 +66,7 @@ class BanditRunner:
 
             findings.append(
                 {
-                    "agent": "Security Agent",
+                    "agent": "Security Vulnerability Agent",
                     "tool": "Bandit",
                     "error": str(e)
                 }

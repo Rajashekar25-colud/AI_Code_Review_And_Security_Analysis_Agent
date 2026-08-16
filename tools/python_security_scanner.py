@@ -1,6 +1,10 @@
 import ast
 import json
+import logging
 import os
+
+
+logger = logging.getLogger(__name__)
 
 
 class SecurityRuleEngine(ast.NodeVisitor):
@@ -37,7 +41,13 @@ class SecurityRuleEngine(ast.NodeVisitor):
                 )
 
 
-        except Exception:
+        except Exception as error:
+
+            logger.error(
+                "Failed to load security rules from %s: %s",
+                rule_file,
+                error
+            )
 
             return []
 
@@ -497,8 +507,9 @@ def scan_python_security(code):
 
         rule_file = os.path.join(
 
-            os.path.dirname(__file__),
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 
+            "knowledge_base",
             "python_security_rules.json"
 
         )

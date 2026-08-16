@@ -4,6 +4,27 @@ import subprocess
 import tempfile
 
 
+CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "config",
+    "pylint_severity_map.json"
+)
+
+_severity_map = None
+
+
+def _load_severity_map():
+
+    global _severity_map
+
+    if _severity_map is None:
+
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            _severity_map = json.load(f)
+
+    return _severity_map
+
+
 class PylintRunner:
     """
     Executes Pylint and returns the reported findings.
@@ -48,13 +69,21 @@ class PylintRunner:
 
                 for issue in issues:
 
+                    pylint_type = issue.get("type", "convention")
+
+                    severity = _load_severity_map().get(
+                        pylint_type,
+                        "LOW"
+                    )
+
                     findings.append(
                         {
                             "agent": "Code Analysis Agent",
                             "tool": "Pylint",
                             "message_id": issue.get("message-id"),
                             "symbol": issue.get("symbol"),
-                            "category": issue.get("type"),
+                            "category": pylint_type,
+                            "severity": severity,
                             "message": issue.get("message"),
                             "path": issue.get("path"),
                             "module": issue.get("module"),

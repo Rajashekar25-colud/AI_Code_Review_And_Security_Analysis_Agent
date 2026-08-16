@@ -1,4 +1,27 @@
+import json
+import os
 import re
+
+
+CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "config",
+    "java_quality_severity.json"
+)
+
+_severity_map = None
+
+
+def _load_severity_map():
+
+    global _severity_map
+
+    if _severity_map is None:
+
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            _severity_map = json.load(f)
+
+    return _severity_map
 
 
 class JavaQualityAnalyzer:
@@ -8,7 +31,6 @@ class JavaQualityAnalyzer:
     Detects:
     - Unused local variables
     - Empty catch blocks
-    - Simple code quality issues
     """
 
     def analyze(self, code):
@@ -25,7 +47,6 @@ class JavaQualityAnalyzer:
 
         return findings
 
-
     def detect_unused_variables(self, code):
 
         findings = []
@@ -35,6 +56,10 @@ class JavaQualityAnalyzer:
             code
         )
 
+        severity = _load_severity_map().get(
+            "unused_local_variable",
+            "LOW"
+        )
 
         for datatype, variable in variables:
 
@@ -45,7 +70,7 @@ class JavaQualityAnalyzer:
                 findings.append(
                     {
                         "issue": "Unused Local Variable",
-                        "severity": "MEDIUM",
+                        "severity": severity,
                         "description":
                         f"Variable '{variable}' is declared but never used.",
                         "recommendation":
@@ -54,8 +79,6 @@ class JavaQualityAnalyzer:
                 )
 
         return findings
-
-
 
     def detect_empty_catch(self, code):
 
@@ -68,19 +91,22 @@ class JavaQualityAnalyzer:
             code
         )
 
+        severity = _load_severity_map().get(
+            "empty_catch_block",
+            "LOW"
+        )
 
         if matches:
 
             findings.append(
                 {
                     "issue": "Empty Catch Block",
-                    "severity": "MEDIUM",
+                    "severity": severity,
                     "description":
                     "Exception is caught but not handled.",
                     "recommendation":
                     "Handle exceptions properly or log the error."
                 }
             )
-
 
         return findings

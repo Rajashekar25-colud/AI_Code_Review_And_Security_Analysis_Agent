@@ -1,0 +1,7 @@
+[
+  { "min_score": 90, "label": "Excellent", "badge": "EXCELLENT", "color": "#43a047" },
+  { "min_score": 75, "label": "Good", "badge": "GOOD", "color": "#7cb342" },
+  { "min_score": 60, "label": "Moderate", "badge": "MODERATE", "color": "#fbc02d" },
+  { "min_score": 40, "label": "Poor", "badge": "POOR", "color": "#f57c00" },
+  { "min_score": 0, "label": "Critical", "badge": "CRITICAL", "color": "#d32f2f" }
+]

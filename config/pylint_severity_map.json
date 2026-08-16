@@ -1,0 +1,7 @@
+{
+  "fatal": "CRITICAL",
+  "error": "HIGH",
+  "warning": "MEDIUM",
+  "refactor": "LOW",
+  "convention": "LOW"
+}

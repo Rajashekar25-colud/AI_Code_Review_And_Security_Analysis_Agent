@@ -3,6 +3,11 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
+import json
+import os
+
+from modules.score_calculator import calculate_score
+
 
 # ==========================================================
 # Severity Colors
@@ -14,6 +19,58 @@ SEVERITY_COLORS = {
     "MEDIUM": "#fbc02d",
     "LOW": "#43a047"
 }
+
+
+# ==========================================================
+# Radar Dimensions
+# ==========================================================
+
+RADAR_DIMENSIONS = [
+    "Security",
+    "Quality",
+    "Maintainability",
+    "Reliability",
+    "Complexity"
+]
+
+
+# ==========================================================
+# Risk Thresholds (config-driven, not hardcoded)
+# ==========================================================
+
+_risk_thresholds = None
+
+
+def _load_risk_thresholds():
+
+    global _risk_thresholds
+
+    if _risk_thresholds is None:
+
+        path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "config",
+            "risk_thresholds.json"
+        )
+
+        with open(path, "r", encoding="utf-8") as f:
+            _risk_thresholds = json.load(f)
+
+    return _risk_thresholds
+
+
+def _get_risk_band(score):
+
+    for band in _load_risk_thresholds():
+
+        if score >= band["min_score"]:
+            return band
+
+    return _load_risk_thresholds()[-1]
+
+
+def get_risk_level(score):
+    return _get_risk_band(score)["label"]
 
 
 # ==========================================================
@@ -31,12 +88,7 @@ def get_severity_counts(findings):
 
     for finding in findings:
 
-        severity = str(
-            finding.get(
-                "severity",
-                "LOW"
-            )
-        ).upper()
+        severity = str(finding.get("severity", "LOW")).upper()
 
         if severity not in counts:
             severity = "LOW"
@@ -51,75 +103,68 @@ def get_severity_counts(findings):
 # ==========================================================
 
 def calculate_health_score(findings):
+    return calculate_score(findings)
 
-    score = 100
 
-    weights = {
-        "CRITICAL": 25,
-        "HIGH": 15,
-        "MEDIUM": 8,
-        "LOW": 3
+# ==========================================================
+# Radar Scores
+#
+# Each dimension's score is calculate_score() applied to the
+# subset of findings produced by the tool(s)/agent relevant to
+# that dimension - not a separate invented formula per axis.
+# ==========================================================
+
+def calculate_radar_scores(findings):
+
+    security_findings = [
+        f for f in findings
+        if f.get("agent") == "Security Vulnerability Agent"
+    ]
+
+    complexity_findings = [
+        f for f in findings
+        if f.get("tool") == "Radon"
+    ]
+
+    quality_findings = [
+        f for f in findings
+        if f.get("agent") == "Code Analysis Agent"
+        and f.get("tool") != "Radon"
+    ]
+
+    reliability_findings = [
+        f for f in findings
+        if f.get("tool") == "SpotBugs"
+    ]
+
+    if not reliability_findings:
+        reliability_findings = findings
+
+    return {
+        "Security": calculate_score(security_findings),
+        "Quality": calculate_score(quality_findings),
+        "Maintainability": calculate_score(quality_findings + complexity_findings),
+        "Reliability": calculate_score(reliability_findings),
+        "Complexity": calculate_score(complexity_findings)
     }
 
-    for finding in findings:
-
-        severity = str(
-            finding.get(
-                "severity",
-                "LOW"
-            )
-        ).upper()
-
-        score -= weights.get(
-            severity,
-            3
-        )
-
-    return max(score, 0)
-
 
 # ==========================================================
-# Risk Level
+# OWASP Coverage
 # ==========================================================
 
-def get_risk_level(score):
+def get_owasp_categories(findings):
 
-    if score >= 90:
-        return "Excellent"
-
-    if score >= 75:
-        return "Good"
-
-    if score >= 60:
-        return "Moderate"
-
-    if score >= 40:
-        return "Poor"
-
-    return "Critical"
-
-
-# ==========================================================
-# Agent Contribution
-# ==========================================================
-
-def get_agent_statistics(findings):
-
-    stats = {}
+    categories = set()
 
     for finding in findings:
 
-        agent = finding.get(
-            "agent",
-            "Unknown Agent"
-        )
+        category = finding.get("owasp_category")
 
-        stats[agent] = stats.get(
-            agent,
-            0
-        ) + 1
+        if category:
+            categories.add(category)
 
-    return stats
+    return sorted(categories)
 
 
 # ==========================================================
@@ -133,49 +178,20 @@ def findings_dataframe(findings):
     for finding in findings:
 
         rows.append({
-
-            "Agent": finding.get(
-                "agent",
-                ""
-            ),
-
-            "Severity": finding.get(
-                "severity",
-                ""
-            ),
-
-            "Type": finding.get(
-                "type",
-                ""
-            ),
-
-            "Line": finding.get(
-                "line",
-                ""
-            ),
-
-            "Description": finding.get(
-                "description",
-                ""
-            ),
-
-            "Recommendation": finding.get(
-                "recommendation",
-                ""
-            )
-
+            "Agent": finding.get("agent", ""),
+            "Severity": finding.get("severity", ""),
+            "Type": finding.get("type", ""),
+            "Line": finding.get("line", ""),
+            "Description": finding.get("description", ""),
+            "Recommendation": finding.get("recommendation", "")
         })
 
     if not rows:
 
         return pd.DataFrame(
             columns=[
-                "Agent",
-                "Severity",
-                "Type",
-                "Line",
-                "Description",
-                "Recommendation"
+                "Agent", "Severity", "Type",
+                "Line", "Description", "Recommendation"
             ]
         )
 
@@ -189,11 +205,8 @@ def findings_dataframe(findings):
 def render_metrics(findings):
 
     counts = get_severity_counts(findings)
-
     score = calculate_health_score(findings)
-
     risk = get_risk_level(score)
-
     total = len(findings)
 
     c1, c2, c3, c4, c5, c6 = st.columns(6)
@@ -205,9 +218,7 @@ def render_metrics(findings):
     c5.metric("Total Issues", total)
     c6.metric("Health Score", f"{score}/100")
 
-    st.success(
-        f"Overall Code Health : **{risk}**"
-    )
+    st.success(f"Overall Code Health : **{risk}**")
 
 
 # ==========================================================
@@ -216,76 +227,22 @@ def render_metrics(findings):
 
 def prepare_dashboard_data(result):
 
-    findings = result.get(
-        "findings",
-        []
-    )
-
-    remediation = result.get(
-        "remediation",
-        {}
-    )
-
-    summary = result.get(
-        "pr_summary",
-        ""
-    )
+    findings = result.get("findings", [])
+    remediation = result.get("remediation", {})
+    summary = result.get("pr_summary", "")
 
     score = calculate_health_score(findings)
 
     return {
-
         "findings": findings,
-
         "remediation": remediation,
-
         "summary": summary,
-
         "counts": get_severity_counts(findings),
-
         "score": score,
-
         "risk": get_risk_level(score),
-
-        "agent_stats": get_agent_statistics(findings),
-
+        "owasp_categories": get_owasp_categories(findings),
         "table": findings_dataframe(findings)
-
     }
-    # ==========================================================
-# Severity Distribution Pie Chart
-# ==========================================================
-
-def render_severity_pie(findings):
-
-    counts = get_severity_counts(findings)
-
-    df = pd.DataFrame(
-        {
-            "Severity": list(counts.keys()),
-            "Count": list(counts.values())
-        }
-    )
-
-    fig = px.pie(
-        df,
-        names="Severity",
-        values="Count",
-        color="Severity",
-        color_discrete_map=SEVERITY_COLORS,
-        hole=0.45
-    )
-
-    fig.update_layout(
-        title="Severity Distribution",
-        height=420,
-        legend_title="Severity"
-    )
-
-    st.plotly_chart(
-        fig,
-        width="stretch"
-    )
 
 
 # ==========================================================
@@ -296,12 +253,10 @@ def render_severity_bar(findings):
 
     counts = get_severity_counts(findings)
 
-    df = pd.DataFrame(
-        {
-            "Severity": list(counts.keys()),
-            "Issues": list(counts.values())
-        }
-    )
+    df = pd.DataFrame({
+        "Severity": list(counts.keys()),
+        "Issues": list(counts.values())
+    })
 
     fig = px.bar(
         df,
@@ -312,9 +267,7 @@ def render_severity_bar(findings):
         text="Issues"
     )
 
-    fig.update_traces(
-        textposition="outside"
-    )
+    fig.update_traces(textposition="outside")
 
     fig.update_layout(
         title="Severity Comparison",
@@ -322,131 +275,69 @@ def render_severity_bar(findings):
         showlegend=False
     )
 
-    st.plotly_chart(
-        fig,
-        width="stretch"
+    st.plotly_chart(fig, width="stretch")
+
+
+# ==========================================================
+# Radar Chart
+# ==========================================================
+
+def render_radar_chart(findings):
+
+    radar_scores = calculate_radar_scores(findings)
+
+    categories = RADAR_DIMENSIONS + [RADAR_DIMENSIONS[0]]
+
+    values = (
+        [radar_scores.get(dim, 100) for dim in RADAR_DIMENSIONS]
+        + [radar_scores.get(RADAR_DIMENSIONS[0], 100)]
     )
 
+    fig = go.Figure()
 
-# ==========================================================
-# Agent Contribution Chart
-# ==========================================================
-
-def render_agent_statistics(findings):
-
-    stats = get_agent_statistics(findings)
-
-    if not stats:
-
-        st.info(
-            "No agent statistics available."
+    fig.add_trace(
+        go.Scatterpolar(
+            r=values,
+            theta=categories,
+            fill="toself",
+            name="Score",
+            line=dict(color="#5b8def"),
+            fillcolor="rgba(91, 141, 239, 0.35)"
         )
-
-        return
-
-    df = pd.DataFrame(
-        {
-            "Agent": list(stats.keys()),
-            "Findings": list(stats.values())
-        }
-    )
-
-    fig = px.bar(
-        df,
-        x="Agent",
-        y="Findings",
-        text="Findings",
-        color="Findings"
-    )
-
-    fig.update_traces(
-        textposition="outside"
     )
 
     fig.update_layout(
-        title="Agent Contribution",
-        height=420
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 100]
+            )
+        ),
+        showlegend=False,
+        title="Score Radar",
+        height=420,
+        margin=dict(t=60, b=10, l=40, r=40)
     )
 
-    st.plotly_chart(
-        fig,
-        width="stretch"
-    )
+    st.plotly_chart(fig, width="stretch")
 
 
 # ==========================================================
-# Findings Timeline
+# OWASP Coverage Widget
 # ==========================================================
 
-def render_timeline(findings):
+def render_owasp_coverage(findings):
 
-    if not findings:
+    categories = get_owasp_categories(findings)
 
-        st.info(
-            "No findings available."
-        )
+    st.subheader("🛡 OWASP Coverage")
 
+    if not categories:
+        st.info("No OWASP-classified findings in this review.")
         return
 
-    data = []
-
-    for index, finding in enumerate(
-        findings,
-        start=1
-    ):
-
-        data.append(
-            {
-                "Finding": index,
-                "Severity": finding.get(
-                    "severity",
-                    "LOW"
-                )
-            }
-        )
-
-    df = pd.DataFrame(data)
-
-    fig = px.line(
-        df,
-        x="Finding",
-        y=[1] * len(df),
-        color="Severity",
-        markers=True,
-        color_discrete_map=SEVERITY_COLORS
-    )
-
-    fig.update_layout(
-        title="Finding Timeline",
-        showlegend=True,
-        yaxis_visible=False,
-        xaxis_title="Finding Number",
-        height=350
-    )
-
-    st.plotly_chart(
-        fig,
-        width="stretch"
-    )
-
-
-# ==========================================================
-# Findings Table
-# ==========================================================
-
-def render_findings_table(findings):
-
-    st.subheader(
-        "Detailed Findings"
-    )
-
-    df = findings_dataframe(findings)
-
-    st.dataframe(
-        df,
-        width="stretch",
-        hide_index=True
-    )
+    for category in categories:
+        st.success(category)
 
 
 # ==========================================================
@@ -458,99 +349,38 @@ def render_health_gauge(findings):
     score = calculate_health_score(findings)
 
     fig = go.Figure(
-
         go.Indicator(
-
             mode="gauge+number",
-
             value=score,
-
-            title={
-                "text": "Overall Code Health Score"
-            },
-
+            title={"text": "Overall Code Health Score"},
             gauge={
-
-                "axis": {
-                    "range": [0, 100]
-                },
-
-                "bar": {
-                    "color": "royalblue"
-                },
-
+                "axis": {"range": [0, 100]},
+                "bar": {"color": "royalblue"},
                 "steps": [
-
-                    {
-                        "range": [0, 40],
-                        "color": "#d32f2f"
-                    },
-
-                    {
-                        "range": [40, 60],
-                        "color": "#f57c00"
-                    },
-
-                    {
-                        "range": [60, 80],
-                        "color": "#fbc02d"
-                    },
-
-                    {
-                        "range": [80, 100],
-                        "color": "#43a047"
-                    }
-
+                    {"range": [0, 40], "color": "#d32f2f"},
+                    {"range": [40, 60], "color": "#f57c00"},
+                    {"range": [60, 80], "color": "#fbc02d"},
+                    {"range": [80, 100], "color": "#43a047"}
                 ]
             }
-
         )
-
     )
 
-    fig.update_layout(
-        height=400
-    )
+    fig.update_layout(height=400)
 
-    st.plotly_chart(
-        fig,
-        width="stretch"
-    )
-    # ==========================================================
-# Download Findings CSV
-# ==========================================================
-
-def download_findings(findings):
-
-    df = findings_dataframe(findings)
-
-    csv = df.to_csv(
-        index=False
-    ).encode("utf-8")
-
-    st.download_button(
-
-        label="⬇ Download Findings CSV",
-
-        data=csv,
-
-        file_name="findings.csv",
-
-        mime="text/csv",
-
-        width="stretch"
-
-    )
+    st.plotly_chart(fig, width="stretch")
 
 
 # ==========================================================
-# Complete Dashboard
+# Complete Dashboard (Executive View)
+#
+# Findings table lives on the Reports page only
+# (ui/report_page.py) - not duplicated here.
 # ==========================================================
 
 def render_dashboard(result):
 
     dashboard = prepare_dashboard_data(result)
-
     findings = dashboard["findings"]
 
     render_metrics(findings)
@@ -560,93 +390,53 @@ def render_dashboard(result):
     col1, col2 = st.columns(2)
 
     with col1:
-
-        render_severity_pie(findings)
+        render_severity_bar(findings)
 
     with col2:
-
         render_health_gauge(findings)
 
     st.divider()
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        render_severity_bar(findings)
-
-    with col2:
-
-        render_agent_statistics(findings)
+    render_radar_chart(findings)
 
     st.divider()
 
-    render_timeline(findings)
-
-    st.divider()
-
-    render_findings_table(findings)
-
-    st.divider()
-
-    download_findings(findings)
+    render_owasp_coverage(findings)
 
     if dashboard["remediation"]:
 
         st.divider()
-
         st.subheader("🛠 Remediation Suggestions")
 
         remediation = dashboard["remediation"]
 
         if isinstance(remediation, dict):
-
-            recommendations = remediation.get(
-                "recommendations",
-                remediation
-            )
-
+            recommendations = remediation.get("recommendations", remediation)
         else:
-
             recommendations = remediation
 
         if isinstance(recommendations, list):
 
-            for index, recommendation in enumerate(
-                recommendations,
-                start=1
-            ):
+            for index, recommendation in enumerate(recommendations, start=1):
 
-                st.markdown(
-                    f"### Recommendation {index}"
-                )
+                st.markdown(f"### Recommendation {index}")
 
                 if isinstance(recommendation, dict):
 
                     for key, value in recommendation.items():
-
-                        st.markdown(
-                            f"**{key.replace('_', ' ').title()}**"
-                        )
-
+                        st.markdown(f"**{key.replace('_', ' ').title()}**")
                         st.write(value)
 
                 else:
-
                     st.write(recommendation)
 
                 st.divider()
 
         else:
-
             st.markdown(recommendations)
 
     if dashboard["summary"]:
 
         st.divider()
-
         st.subheader("📋 Pull Request Summary")
-
-        st.markdown(
-            dashboard["summary"]
-        )
+        st.markdown(dashboard["summary"])
