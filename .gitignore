@@ -1,17 +1,39 @@
 # Environment variables
 .env
 
-# Python
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
 
 # Chroma database
 chroma_db/
 
-# Virtual environment
-venv/
-.venv/
+# SQLite database
+app_data.db
+*.db
+
+# Logs
+logs/
+*.log
+
+# Generated reports
+generated_reports/
 
 # IDE
 .vscode/
 .idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+New Text Document.txt
