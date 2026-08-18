@@ -15,14 +15,19 @@ def get_groq_model(
     Returns a configured ChatGroq client.
 
     max_tokens controls how much output the model is allowed to
-    generate in one response. Callers that need longer, structured
+    generate in one response - callers needing longer, structured
     output (JSON findings arrays, detailed remediation reports)
-    should pass a higher value explicitly - the previous fixed
-    512-token default was silently truncating responses mid-string
-    for anything beyond a couple of short findings, which is what
-    caused "Unterminated string" JSON parse failures in
-    agents/java_security_analyzer.py and cut-off remediation
-    reports.
+    should pass a higher value explicitly.
+
+    timeout/max_retries are set generously because longer
+    generations (higher max_tokens) take longer to complete, and
+    ChatGroq's short default timeout was causing "Connection
+    error" failures specifically on the longer remediation/PR
+    summary prompts, even though short test prompts worked fine -
+    the connection itself was never the problem, the response
+    just wasn't finishing before the old default timeout hit.
+    max_retries adds automatic retry on transient network blips
+    instead of failing immediately on the first hiccup.
     """
 
     api_key = os.getenv(
@@ -57,6 +62,10 @@ def get_groq_model(
 
         temperature=temperature,
 
-        max_tokens=max_tokens
+        max_tokens=max_tokens,
+
+        timeout=90,
+
+        max_retries=2
 
     )

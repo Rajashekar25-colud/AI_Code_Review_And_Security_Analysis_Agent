@@ -108,10 +108,6 @@ def calculate_health_score(findings):
 
 # ==========================================================
 # Radar Scores
-#
-# Each dimension's score is calculate_score() applied to the
-# subset of findings produced by the tool(s)/agent relevant to
-# that dimension - not a separate invented formula per axis.
 # ==========================================================
 
 def calculate_radar_scores(findings):
@@ -150,7 +146,8 @@ def calculate_radar_scores(findings):
 
 
 # ==========================================================
-# OWASP Coverage
+# OWASP Coverage (data helper kept - used by Reports page;
+# the dashboard widget itself was removed per request)
 # ==========================================================
 
 def get_owasp_categories(findings):
@@ -323,24 +320,6 @@ def render_radar_chart(findings):
 
 
 # ==========================================================
-# OWASP Coverage Widget
-# ==========================================================
-
-def render_owasp_coverage(findings):
-
-    categories = get_owasp_categories(findings)
-
-    st.subheader("🛡 OWASP Coverage")
-
-    if not categories:
-        st.info("No OWASP-classified findings in this review.")
-        return
-
-    for category in categories:
-        st.success(category)
-
-
-# ==========================================================
 # Code Health Gauge
 # ==========================================================
 
@@ -374,8 +353,8 @@ def render_health_gauge(findings):
 # ==========================================================
 # Complete Dashboard (Executive View)
 #
-# Findings table lives on the Reports page only
-# (ui/report_page.py) - not duplicated here.
+# OWASP Coverage widget removed from this view per request -
+# get_owasp_categories() is still used by the Reports page.
 # ==========================================================
 
 def render_dashboard(result):
@@ -399,10 +378,6 @@ def render_dashboard(result):
 
     render_radar_chart(findings)
 
-    st.divider()
-
-    render_owasp_coverage(findings)
-
     if dashboard["remediation"]:
 
         st.divider()
@@ -410,33 +385,61 @@ def render_dashboard(result):
 
         remediation = dashboard["remediation"]
 
-        if isinstance(remediation, dict):
-            recommendations = remediation.get("recommendations", remediation)
-        else:
-            recommendations = remediation
+        if isinstance(remediation, dict) and remediation.get("error"):
 
-        if isinstance(recommendations, list):
-
-            for index, recommendation in enumerate(recommendations, start=1):
-
-                st.markdown(f"### Recommendation {index}")
-
-                if isinstance(recommendation, dict):
-
-                    for key, value in recommendation.items():
-                        st.markdown(f"**{key.replace('_', ' ').title()}**")
-                        st.write(value)
-
-                else:
-                    st.write(recommendation)
-
-                st.divider()
+            st.error(
+                "⚠️ AI remediation could not be generated right now "
+                "(a connection issue occurred with the AI model). "
+                "The security findings above are still accurate - "
+                "only the AI-written suggestions failed. Try running "
+                "the review again."
+            )
 
         else:
-            st.markdown(recommendations)
+
+            if isinstance(remediation, dict):
+                recommendations = remediation.get("recommendations", remediation)
+            else:
+                recommendations = remediation
+
+            if isinstance(recommendations, list):
+
+                for index, recommendation in enumerate(recommendations, start=1):
+
+                    st.markdown(f"### Recommendation {index}")
+
+                    if isinstance(recommendation, dict):
+
+                        for key, value in recommendation.items():
+                            st.markdown(f"**{key.replace('_', ' ').title()}**")
+                            st.write(value)
+
+                    else:
+                        st.write(recommendation)
+
+                    st.divider()
+
+            elif isinstance(recommendations, str):
+                st.markdown(recommendations)
+
+            else:
+                st.info("No remediation content available for this review.")
 
     if dashboard["summary"]:
 
         st.divider()
         st.subheader("📋 Pull Request Summary")
-        st.markdown(dashboard["summary"])
+
+        summary = dashboard["summary"]
+
+        if isinstance(summary, str) and "failed" in summary.lower():
+
+            st.warning(
+                "⚠️ The AI-generated PR summary could not be created "
+                "right now due to a connection issue. The findings "
+                "and severity breakdown above are still accurate. "
+                "Try running the review again."
+            )
+
+        else:
+            st.markdown(summary)

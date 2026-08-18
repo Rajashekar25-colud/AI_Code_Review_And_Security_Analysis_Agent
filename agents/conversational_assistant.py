@@ -137,9 +137,16 @@ class ConversationalAssistant:
 
         # -------------------------------
         # LLM
+        #
+        # max_tokens raised from the old shared default (1024) -
+        # answers that include a findings table plus a numbered
+        # action list with code blocks were getting cut off
+        # mid-sentence before completing.
         # -------------------------------
 
-        self.llm = get_groq_model()
+        self.llm = get_groq_model(
+            max_tokens=1536
+        )
 
 
 
@@ -180,6 +187,9 @@ Rules:
    impact, OWASP category (if available), prevention method, and
    a secure coding example.
 6. Never reference specific line numbers.
+7. Keep your full answer, including any table and action list,
+   under 500 words so it completes fully within your output
+   limit instead of being cut off mid-sentence.
 
 Knowledge Base Context:
 {context}
